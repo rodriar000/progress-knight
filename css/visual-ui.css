@@ -40,7 +40,9 @@ h1 { font-size: 36px; letter-spacing: .025em; }
     vertical-align: middle;
 }
 
+.has-info .progress-bar, .has-info .item-button { width: 190px; }
 .has-info .item-button { vertical-align: middle; }
+.has-info .progress-text { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .info-button {
     display: inline-flex;
