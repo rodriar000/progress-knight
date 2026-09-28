@@ -169,11 +169,15 @@
     border-radius: 0 3px 3px 0;
 }
 
-.game-ledger .requiredRow td {
+.game-ledger .requiredRow {
     padding-top: 2px;
     padding-bottom: 9px;
     color: var(--ledger-muted) !important;
     font-style: italic;
+}
+
+.dark .game-ledger :is(.income, .expense) span:nth-child(4) {
+    color: #dba276 !important;
 }
 
 .game-ledger .description-row td {
