@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
     <link rel="stylesheet" type="text/css" href="css/dark.css">
+    <link rel="stylesheet" type="text/css" href="css/character.css">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
     <title>Progress Knight</title>
 </head>
@@ -12,6 +13,15 @@
         <h1>Progress Knight</h1>
         <div style="width: 1220px; height: 600px"> 
             <div class="panel w3-padding" style="width: 300px; height: auto; float: left">
+                <section class="character-panel" aria-label="Current character">
+                    <div class="character-panel__eyebrow">YOUR JOURNEY</div>
+                    <div id="characterFigure" class="character-panel__figure" role="img" aria-label="Your character"></div>
+                    <div class="character-panel__identity">
+                        <span id="characterJob">Beggar</span>
+                        <span id="characterLevel">LV 0</span>
+                    </div>
+                    <div id="characterRank" class="character-panel__rank">Common work</div>
+                </section>
                 <span id="deathText">
                     <div style="font-size: large; color: red">Age has caught up to you</div>
                     <div class="sidebar-element" style="color: gray">Your age has met your lifespan, use the amulet to rebirth before you pass away</div>
@@ -298,5 +308,6 @@
 <script type="text/javascript" src="js/HackTimer.js"></script>
 <script type="text/javascript" src="js/classes.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript" src="js/character.js"></script>
 
 </html>
