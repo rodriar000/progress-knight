@@ -8,13 +8,14 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" type="text/css" href="css/visual-ui.css?v=2">
     <link rel="stylesheet" type="text/css" href="css/ledger.css?v=2">
+    <link rel="stylesheet" type="text/css" href="css/status.css?v=1">
     <title>Progress Knight</title>
 </head>
 <body id="body" class="dark">
     <div class="w3-margin"> 
         <h1>Progress Knight</h1>
-        <div style="width: 1220px; height: 600px"> 
-            <div class="panel w3-padding" style="width: 300px; height: auto; float: left">
+        <div class="game-layout">
+            <aside class="panel status-sidebar" aria-label="Character status">
                 <section class="character-panel" aria-label="Current character">
                     <div class="character-panel__eyebrow">YOUR JOURNEY</div>
                     <div id="characterFigure" class="character-panel__figure" role="img" aria-label="Your character"></div>
@@ -25,78 +26,53 @@
                     <div id="characterRank" class="character-panel__rank">Common work</div>
                     <div id="characterLocation" class="character-panel__location">Old quarter</div>
                 </section>
-                <span id="deathText">
-                    <div style="font-size: large; color: red">Age has caught up to you</div>
-                    <div class="sidebar-element" style="color: gray">Your age has met your lifespan, use the amulet to rebirth before you pass away</div>
-                </span>
-
-                <div class="" style="font-size: large">Age <span id="ageDisplay">14</span> Day <span id="dayDisplay">0</span></div>
-                <div class="sidebar-element" style="color: gray">Lifespan: <span id="lifespanDisplay">70</span> years</div>
-                
-                <button id="pauseButton" class="w3-button button sidebar-element" onClick="setPause()">Pause</button>
-
-                <span id="automation" class="inline" style="margin-left: 8px">
-                    <span>
-                        <div class="inline">Auto-promote</div>
-                        <input type="checkbox" class="inline" id="autoPromote">
-                    </span>
-                    </br>
-                    <span>
-                        <div class="inline">Auto-learn</div>
-                        <input type="checkbox" class="inline sidebar-element" id="autoLearn">
-                    </span>
-                </span>
-
-                <div style="font-size: large" id="coinDisplay">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                <div id="deathText" class="status-alert">
+                    <strong>Age has caught up to you</strong>
+                    <span>Use the amulet to rebirth before you pass away.</span>
                 </div>
-                <div style="color: gray">Balance (in coins)</div>
 
-                <ul class="sidebar-element" style="padding-left: 20px;">
-                    <li><span style="color: rgb(9, 160, 230)">Net/day: </span ><b id="signDisplay"></b><span id="netDisplay">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </span></li>
-                    <li><span style="color: green">Income/day: </span><span id="incomeDisplay">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </span></li>
-                    <li><span style="color: red">Expense/day: </span><span id="expenseDisplay">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </span></li>
-                </ul>
-
-                <span id="quickTaskDisplay">
-                    <div style="width: 230px" class="small-margin inline job progress-bar progressBar">
-                        <div class="progress-fill progressFill" style="background-color:rgb(225, 165, 0)"></div>
-                        <div class="progress-text name">Task</div>
+                <section class="status-vitals" aria-label="Age and lifespan">
+                    <div class="status-vitals__line">
+                        <span>Age <strong id="ageDisplay">14</strong> <span class="status-vitals__day">Day <span id="dayDisplay">0</span></span></span>
+                        <span class="status-vitals__limit">of <span id="lifespanDisplay">70</span> years</span>
                     </div>
-                    <div class="sidebar-element" style="color: gray">Current job</div>
-
-                    <div style="width: 230px" class="small-margin skill progress-bar progressBar">
-                        <div class="progress-fill progressFill" style="background-color:rgb(225, 165, 0)"></div>
-                        <div class="progress-text name">Task</div>              
+                    <div class="status-life-meter" role="progressbar" aria-label="Life elapsed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20">
+                        <div id="lifeMeterFill"></div>
                     </div>
-                    <div class="sidebar-element" style="color: gray">Current skill</div>
-                </span>
+                </section>
 
-                <div style="font-size: large"><span style="color: rgb(15, 105, 207)">Happiness: </span><span id="happinessDisplay"></span></div>
-                <div style="color: gray" class="sidebar-element">Affects all xp gain</div>
+                <div class="status-controls">
+                    <button id="pauseButton" class="w3-button button" onClick="setPause()">Pause</button>
+                    <div id="automation" class="status-automation">
+                        <label>Auto-promote <input type="checkbox" id="autoPromote"></label>
+                        <label>Auto-learn <input type="checkbox" id="autoLearn"></label>
+                    </div>
+                </div>
 
-                <span id="evilInfo">
-                    <div style="font-size: large"><span style="color: rgb(200, 0, 0)">Evil: </span><span id="evilDisplay"></span></div>
-                    <div style="color: gray" class="sidebar-element">Affects dark magic xp gain</div>
-                </span>
+                <section class="status-wallet" aria-label="Economy">
+                    <div class="status-heading">Treasury</div>
+                    <div id="coinDisplay" class="status-balance"><span></span><span></span><span></span><span></span></div>
+                    <dl class="status-economy">
+                        <div><dt>Net/day</dt><dd><b id="signDisplay"></b><span id="netDisplay"><span></span><span></span><span></span><span></span></span></dd></div>
+                        <div><dt>Income/day</dt><dd id="incomeDisplay"><span></span><span></span><span></span><span></span></dd></div>
+                        <div><dt>Expense/day</dt><dd id="expenseDisplay"><span></span><span></span><span></span><span></span></dd></div>
+                    </dl>
+                </section>
+
+                <section id="quickTaskDisplay" class="status-tasks" aria-label="Current tasks">
+                    <div class="status-task">
+                        <div class="status-heading">Current job</div>
+                        <div class="job progress-bar progressBar"><div class="progress-fill progressFill"></div><div class="progress-text name">Task</div></div>
+                    </div>
+                    <div class="status-task">
+                        <div class="status-heading">Current skill</div>
+                        <div class="skill progress-bar progressBar"><div class="progress-fill progressFill"></div><div class="progress-text name">Task</div></div>
+                    </div>
+                </section>
+
+                <div class="status-bonus"><span>Happiness</span><strong id="happinessDisplay"></strong><small>Affects all xp gain</small></div>
+
+                <div id="evilInfo" class="status-bonus status-bonus--evil"><span>Evil</span><strong id="evilDisplay"></strong><small>Affects dark magic xp gain</small></div>
 
                 <!--
                 <span id="scheduling">
@@ -110,22 +86,23 @@
                 </span>
                 -->
 
-                <span id="timeWarping">
-                    <div style="font-size: large"><span style="color: rgb(204, 34, 219)">Time warping: </span><span id="timeWarpingDisplay"></span></div>
-                    <div style="color: gray">Affects game speed</div>
-                    <button id="timeWarpingButton" class="w3-button button sidebar-element" style="margin-top: 5px; width:150px" onClick="setTimeWarping()">Enable warp</button>
-                </span>
-            </div>
+                <div id="timeWarping" class="status-bonus status-bonus--warp">
+                    <span>Time warping</span><strong id="timeWarpingDisplay"></strong><small>Affects game speed</small>
+                    <button id="timeWarpingButton" class="w3-button button" onClick="setTimeWarping()">Enable warp</button>
+                </div>
+            </aside>
 
-            <div class="panel game-nav w3-margin-left" style="width: 900px; height: 40px; float: left">
+            <main class="game-content">
+
+            <nav class="panel game-nav" aria-label="Game sections">
                 <div class="w3-button w3-bar-item tabButton" id="jobTabButton" onClick="setTab(this, 'jobs')">Jobs</div>
                 <div class="w3-button w3-bar-item tabButton" onClick="setTab(this, 'skills')">Skills</div>
                 <div class="w3-button w3-bar-item tabButton" id="shopTabButton" onClick="setTab(this, 'shop')">Shop</div>
                 <div class="w3-button w3-bar-item tabButton" id="rebirthTabButton" onClick="setTab(this, 'rebirth')">Amulet</div>
                 <div class="w3-button w3-bar-item tabButton" onClick="setTab(this, 'settings')" style="float: right">Settings</div>
-            </div>
+            </nav>
 
-            <div class="panel game-ledger w3-margin-left w3-margin-top w3-padding" style="width: 900px; height: auto; float: left">
+            <div class="panel game-ledger w3-padding">
                 <template class="headerRowTaskTemplate">
                     <tr>
                         <th class="category" style="width: 250px">Job</th>
@@ -304,6 +281,7 @@
                     </ul>
                 </div>
             </div>
+            </main>
         </div>
     </div>
 </body>

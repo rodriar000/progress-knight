@@ -608,6 +608,11 @@ function updateText() {
     document.getElementById("ageDisplay").textContent = daysToYears(gameData.days)
     document.getElementById("dayDisplay").textContent = getDay()
     document.getElementById("lifespanDisplay").textContent = daysToYears(getLifespan())
+    var lifeProgress = Math.min(100, Math.max(0, gameData.days / getLifespan() * 100))
+    var lifeMeter = document.querySelector(".status-life-meter")
+    lifeMeter.setAttribute("aria-valuenow", Math.round(lifeProgress))
+    lifeMeter.classList.toggle("is-late", lifeProgress >= 85)
+    document.getElementById("lifeMeterFill").style.width = lifeProgress + "%"
     document.getElementById("pauseButton").textContent = gameData.paused ? "Play" : "Pause"
 
     formatCoins(gameData.coins, document.getElementById("coinDisplay"))

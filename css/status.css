@@ -1,0 +1,216 @@
+.game-layout {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 900px);
+    align-items: start;
+    gap: 16px;
+    width: min(100%, 1216px);
+    min-height: 600px;
+}
+
+.game-content { min-width: 0; }
+.game-content .game-nav,
+.game-content .game-ledger { width: 100%; }
+.game-content .game-ledger { margin-top: 16px; }
+
+.status-sidebar {
+    --status-ink: #372a1d;
+    --status-muted: #6c5a43;
+    --status-rule: rgba(110, 80, 44, .36);
+    position: sticky;
+    top: 12px;
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 11px !important;
+    color: var(--status-ink);
+    border: 1px solid rgba(110, 80, 44, .56);
+    border-radius: 8px;
+    background:
+        repeating-linear-gradient(100deg, transparent 0 7px, rgba(110, 77, 42, .014) 8px 9px),
+        linear-gradient(160deg, rgba(246, 237, 216, .97), rgba(222, 209, 180, .95));
+    box-shadow: 0 16px 36px rgba(20, 15, 10, .26), inset 0 1px rgba(255, 255, 255, .59);
+    backdrop-filter: blur(10px);
+    scrollbar-width: thin;
+    scrollbar-color: #a88a61 transparent;
+}
+
+.dark .status-sidebar {
+    --status-ink: #f0e6d0;
+    --status-muted: #c5b393;
+    --status-rule: rgba(191, 153, 101, .31);
+    border-color: rgba(184, 146, 92, .52);
+    background:
+        repeating-linear-gradient(100deg, transparent 0 7px, rgba(218, 183, 128, .012) 8px 9px),
+        linear-gradient(150deg, rgba(43, 42, 38, .97), rgba(27, 34, 38, .96));
+    box-shadow: 0 18px 38px rgba(0, 0, 0, .39), inset 0 1px rgba(255, 236, 199, .1);
+}
+
+.status-sidebar .character-panel {
+    display: grid;
+    grid-template-columns: 85px minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr auto;
+    column-gap: 10px;
+    min-height: 136px;
+    margin: 0 0 10px;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.status-sidebar .character-panel__figure {
+    grid-column: 1;
+    grid-row: 1 / 5;
+    height: 118px;
+    margin: 0;
+}
+
+.status-sidebar .character-panel__figure::before { inset: 7px 5px 9px; }
+.status-sidebar .character-panel__figure::after { inset: auto 8px 5px; }
+.status-sidebar .character-panel__eyebrow {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 1px 0 5px;
+    text-align: left;
+    font-size: 9px;
+    letter-spacing: .08em;
+}
+
+.status-sidebar .character-panel__identity {
+    grid-column: 2;
+    grid-row: 2;
+    display: block;
+    line-height: 1.1;
+    font-size: 18px;
+    overflow-wrap: anywhere;
+}
+
+.status-sidebar .character-panel__identity span:last-child {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+.status-sidebar .character-panel__rank {
+    grid-column: 2;
+    grid-row: 3;
+    margin: 5px 0 0;
+    line-height: 1.15;
+}
+
+.status-sidebar .character-panel__location {
+    grid-column: 2;
+    grid-row: 4;
+    margin-top: 3px;
+    padding-top: 5px;
+    font-size: 9px;
+    letter-spacing: .06em;
+}
+
+.status-alert {
+    display: grid;
+    gap: 3px;
+    margin: 0 0 9px;
+    padding: 7px 9px;
+    border-left: 3px solid #b76c55;
+    background: rgba(129, 65, 49, .14);
+    color: var(--status-ink);
+    font-size: 14px;
+    line-height: 1.1;
+}
+.status-alert strong { color: #b76850; }
+.dark .status-alert strong { color: #e1a28a; }
+
+.status-vitals { padding-bottom: 10px; border-bottom: 1px solid var(--status-rule); }
+.status-vitals__line { display: flex; align-items: baseline; justify-content: space-between; gap: 5px; white-space: nowrap; }
+.status-vitals__line strong { font-size: 23px; font-weight: 400; color: var(--status-ink); }
+.status-vitals__day, .status-vitals__limit { font-size: 13px; color: var(--status-muted); }
+.status-life-meter {
+    height: 6px;
+    margin-top: 5px;
+    overflow: hidden;
+    border-radius: 6px;
+    background: rgba(27, 35, 39, .68);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .33);
+}
+.status-life-meter > div { height: 100%; width: 0; background: linear-gradient(90deg, #668b8b, #c5a16b); }
+.status-life-meter.is-late > div { background: linear-gradient(90deg, #bc8a60, #c16958); }
+
+.status-controls { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--status-rule); }
+.status-sidebar #pauseButton,
+.status-sidebar #timeWarpingButton {
+    border: 1px solid #9d8059 !important;
+    border-radius: 3px;
+    color: #f9edda;
+    background: linear-gradient(#536167, #34444a);
+    box-shadow: inset 0 1px rgba(255, 255, 255, .18);
+}
+.status-sidebar #pauseButton { min-width: 75px; padding: 6px 10px; }
+.status-sidebar #pauseButton:hover,
+.status-sidebar #timeWarpingButton:hover { background: linear-gradient(#66777d, #44565c); }
+.status-sidebar button:focus-visible,
+.status-sidebar input:focus-visible { outline: 2px solid #d5a45e; outline-offset: 2px; }
+.status-automation { flex: 1; min-width: 0; font-size: 13px; line-height: 1.25; }
+.status-automation label { display: flex; align-items: center; justify-content: space-between; gap: 4px; cursor: pointer; }
+.status-automation input { margin: 2px 0; accent-color: #b18c59; }
+
+.status-wallet { padding: 10px 0 9px; border-bottom: 1px solid var(--status-rule); }
+.status-heading {
+    color: var(--status-muted);
+    font: 400 12px "Medieval Sharp", Georgia, serif;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+.status-balance { min-height: 27px; margin: 1px 0 5px; font-size: 22px; line-height: 1.15; white-space: nowrap; }
+.status-economy { margin: 0; font-size: 14px; line-height: 1.25; }
+.status-economy > div { display: flex; justify-content: space-between; gap: 5px; padding: 2px 0; }
+.status-economy dt { color: var(--status-muted); }
+.status-economy dd { margin: 0; text-align: right; white-space: nowrap; }
+.status-sidebar :is(#coinDisplay, #netDisplay, #incomeDisplay, #expenseDisplay) > span:nth-child(4) { color: #9c5430 !important; }
+.dark .status-sidebar :is(#coinDisplay, #netDisplay, #incomeDisplay, #expenseDisplay) > span:nth-child(4) { color: #dba276 !important; }
+.status-sidebar #signDisplay[style*="green"] { color: #658764 !important; }
+.dark .status-sidebar #signDisplay[style*="green"] { color: #a0ca9a !important; }
+.status-sidebar #signDisplay[style*="red"] { color: #b06250 !important; }
+.dark .status-sidebar #signDisplay[style*="red"] { color: #eca38d !important; }
+
+.status-tasks { display: grid; gap: 9px; padding: 10px 0; border-bottom: 1px solid var(--status-rule); }
+.status-task .status-heading { margin-bottom: 3px; }
+.status-sidebar #quickTaskDisplay .progress-bar { display: block; width: 100%; height: 30px; cursor: default; }
+.status-sidebar #quickTaskDisplay .progress-text { padding: 2px 8px; font-size: 15px; }
+
+.status-bonus {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0 5px;
+    padding: 8px 0 0;
+    font-size: 17px;
+}
+.status-bonus > span { color: var(--status-ink); }
+.status-bonus > strong { color: #876b3d; font-weight: 400; }
+.dark .status-bonus > strong { color: #e2bd7e; }
+.status-bonus > small { grid-column: 1 / -1; color: var(--status-muted); font-size: 12px; line-height: 1.1; }
+.status-bonus--evil > strong { color: #b06250; }
+.dark .status-bonus--evil > strong { color: #eca38d; }
+.status-bonus--warp > strong { color: #78678c; }
+.dark .status-bonus--warp > strong { color: #b9a6d0; }
+.status-sidebar #timeWarpingButton { grid-column: 1 / -1; justify-self: start; margin-top: 5px; padding: 4px 8px; font-size: 13px; }
+
+@media (max-width: 1080px) {
+    .game-layout { grid-template-columns: 280px minmax(0, 1fr); }
+    .game-content { overflow-x: auto; }
+    .game-content .game-nav, .game-content .game-ledger { min-width: 760px; }
+}
+
+@media (max-width: 700px) {
+    .game-layout { display: block; }
+    .status-sidebar { position: relative; top: auto; max-height: none; margin-bottom: 12px; }
+    .game-content .game-nav, .game-content .game-ledger { min-width: 760px; }
+}
+
+@media (max-height: 740px) and (min-width: 701px) {
+    .status-sidebar .character-panel { min-height: 111px; }
+    .status-sidebar .character-panel__figure { height: 94px; }
+    .status-sidebar .character-panel__location { display: none; }
+    .status-sidebar .character-panel__eyebrow { margin-bottom: 2px; }
+    .status-wallet { padding: 6px 0; }
+    .status-tasks { gap: 5px; padding: 6px 0; }
+}
