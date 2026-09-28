@@ -82,7 +82,7 @@
         const preload = new Image();
         preload.onload = () => {
             if (request !== sceneRequest) return;
-            const next = 1 - activeScene;
+            const next = activeScene === 0 ? 1 : 0;
             sceneLayers[next].style.backgroundImage = `url("${url}")`;
             sceneLayers[next].classList.add("is-visible");
             if (activeScene !== -1) sceneLayers[activeScene].classList.remove("is-visible");
