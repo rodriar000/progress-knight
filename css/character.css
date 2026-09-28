@@ -26,7 +26,7 @@
 
 .character-panel__figure {
     position: relative;
-    height: 280px;
+    height: 300px;
     margin: 0 -4px 10px;
     overflow: hidden;
     isolation: isolate;
@@ -51,7 +51,7 @@
 .character-panel__figure::before {
     content: "";
     position: absolute;
-    z-index: 0;
+    z-index: 1;
     inset: 13px 16px 18px;
     border: 1px solid color-mix(in srgb, var(--portrait-accent) 42%, transparent);
     border-radius: 48% 48% 5px 5px;
@@ -62,7 +62,7 @@
 .character-panel__figure::after {
     content: "";
     position: absolute;
-    z-index: 2;
+    z-index: 3;
     inset: auto 16px 10px;
     height: 14px;
     border-radius: 50%;
@@ -70,15 +70,38 @@
     filter: blur(8px);
 }
 
+.character-scene {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    opacity: 0;
+    background-color: #39404a;
+    background-position: center 45%;
+    background-size: cover;
+    transition: opacity 450ms ease;
+}
+
+.character-scene::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(19, 22, 29, .12), transparent 38%, rgba(14, 17, 24, .26));
+    box-shadow: inset 0 0 25px rgba(14, 17, 24, .22);
+}
+
+.character-scene.is-visible { opacity: 1; }
+
 .character-sprite {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     inset: 0;
     background-repeat: no-repeat;
     filter: drop-shadow(0 9px 7px rgba(0, 0, 0, .28));
     transform-origin: center 88%;
     animation: portrait-breathe 5s ease-in-out infinite;
 }
+
+.character-sprite--arriving { animation: portrait-arrive 450ms ease-out, portrait-breathe 5s ease-in-out 450ms infinite; }
 
 .character-panel__figure[data-tier="1"]::before { opacity: .88; }
 .character-panel__figure[data-tier="2"]::before {
@@ -114,10 +137,31 @@
 
 .dark .character-panel__rank { color: #b7a992; }
 
+.character-panel__location {
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px solid rgba(116, 99, 77, .3);
+    color: #715b44;
+    font: 700 10px Arial, sans-serif;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+}
+
+.dark .character-panel__location {
+    border-color: rgba(200, 184, 154, .25);
+    color: #cbb89e;
+}
+
+@keyframes portrait-arrive {
+    from { opacity: .4; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes portrait-breathe {
     50% { transform: translateY(-2px) scale(1.004); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .character-sprite { animation: none; }
+    .character-sprite, .character-sprite--arriving { animation: none; }
+    .character-scene { transition: none; }
 }
