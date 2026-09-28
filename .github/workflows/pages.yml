@@ -4,7 +4,14 @@ on:
   push:
     branches:
       - main
-      - 'feature/**'
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
   workflow_dispatch:
 
 permissions:
@@ -18,6 +25,8 @@ concurrency:
 
 jobs:
   build:
+    # Only preview PRs whose head is in this repository. Never run PR code.
+    if: github.event_name != 'pull_request_target' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Check out main
@@ -25,19 +34,21 @@ jobs:
         with:
           ref: main
           path: stable
+          persist-credentials: false
       - name: Prepare stable game
         run: |
           mkdir -p dist
           cp stable/index.html dist/
           cp -R stable/css stable/js dist/
-      - name: Check out current feature
-        if: github.ref != 'refs/heads/main'
+      - name: Check out current PR for static preview
+        if: github.event_name == 'pull_request_target' && github.event.action != 'closed'
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           path: candidate
+          persist-credentials: false
       - name: Prepare preview
-        if: github.ref != 'refs/heads/main'
+        if: github.event_name == 'pull_request_target' && github.event.action != 'closed'
         run: |
           mkdir -p dist/preview
           cp candidate/index.html dist/preview/
