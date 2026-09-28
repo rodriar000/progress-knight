@@ -40,6 +40,7 @@ jobs:
           mkdir -p dist
           cp stable/index.html dist/
           cp -R stable/css stable/js dist/
+          if [ -d stable/art ]; then cp -R stable/art dist/; fi
       - name: Check out current PR for static preview
         if: github.event_name == 'pull_request_target' && github.event.action != 'closed'
         uses: actions/checkout@v4
@@ -53,6 +54,7 @@ jobs:
           mkdir -p dist/preview
           cp candidate/index.html dist/preview/
           cp -R candidate/css candidate/js dist/preview/
+          if [ -d candidate/art ]; then cp -R candidate/art dist/preview/; fi
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site
