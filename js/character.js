@@ -97,7 +97,7 @@
             if (request !== sceneRequest) return;
             const next = activeScene === 0 ? 1 : 0;
             sceneLayers[next].style.backgroundImage = `url("${url}")`;
-            worldLayers[next].style.setProperty("--world-image", `url("${url}")`);
+            worldLayers[next].style.setProperty("--world-image", `url("${preload.src}")`);
             sceneLayers[next].classList.add("is-visible");
             worldLayers[next].classList.add("is-visible");
             if (activeScene !== -1) {
