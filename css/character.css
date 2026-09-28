@@ -1,3 +1,67 @@
+.world-backdrop {
+    position: fixed;
+    z-index: 0;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: #393c3e;
+}
+
+.world-backdrop__scene,
+.world-backdrop__scene::before,
+.world-backdrop__scene::after,
+.world-backdrop__veil {
+    position: absolute;
+    inset: 0;
+}
+
+.world-backdrop__scene {
+    opacity: 0;
+    transition: opacity 550ms ease;
+}
+
+.world-backdrop__scene.is-visible { opacity: 1; }
+
+.world-backdrop__scene::before,
+.world-backdrop__scene::after { content: ""; background-image: var(--world-image); background-repeat: no-repeat; }
+
+.world-backdrop__scene::before {
+    inset: -25px;
+    background-size: cover;
+    background-position: center 45%;
+    filter: blur(18px);
+}
+
+.world-backdrop__scene::after {
+    background-size: auto 100%;
+    background-position: center;
+    -webkit-mask-image: linear-gradient(90deg, transparent 8%, #000 34%, #000 66%, transparent 92%);
+    mask-image: linear-gradient(90deg, transparent 8%, #000 34%, #000 66%, transparent 92%);
+}
+
+.world-backdrop__veil {
+    background: linear-gradient(90deg, rgba(242, 237, 227, .68), rgba(242, 237, 227, .48) 48%, rgba(242, 237, 227, .65));
+}
+
+.dark .world-backdrop__veil {
+    background: linear-gradient(90deg, rgba(12, 16, 22, .69), rgba(12, 16, 22, .47) 48%, rgba(12, 16, 22, .66));
+}
+
+body > .w3-margin { position: relative; z-index: 1; }
+
+.panel {
+    background-color: rgba(255, 255, 255, .91);
+    box-shadow: 0 12px 30px rgba(21, 19, 16, .12);
+    backdrop-filter: blur(7px);
+}
+
+.dark .panel {
+    background-color: rgba(35, 38, 43, .89);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .22);
+}
+
+.dark .panel .w3-table { color: #e7e4df; }
+
 .character-panel {
     --portrait-accent: #bb9870;
     margin: -4px -4px 20px;
@@ -163,5 +227,5 @@
 
 @media (prefers-reduced-motion: reduce) {
     .character-sprite, .character-sprite--arriving { animation: none; }
-    .character-scene { transition: none; }
+    .character-scene, .world-backdrop__scene { transition: none; }
 }
