@@ -1,0 +1,61 @@
+name: Publish game
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: stable
+      - name: Prepare stable game
+        run: |
+          mkdir -p dist
+          cp stable/index.html dist/
+          cp -R stable/css stable/js dist/
+      - name: Check out current feature
+        if: github.ref != 'refs/heads/main'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          path: candidate
+      - name: Prepare preview
+        if: github.ref != 'refs/heads/main'
+        run: |
+          mkdir -p dist/preview
+          cp candidate/index.html dist/preview/
+          cp -R candidate/css candidate/js dist/preview/
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
