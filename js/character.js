@@ -58,6 +58,19 @@
 
     const figure = document.getElementById("characterFigure");
     if (!figure) return;
+    const world = document.createElement("div");
+    world.className = "world-backdrop";
+    world.setAttribute("aria-hidden", "true");
+    const worldLayers = [document.createElement("div"), document.createElement("div")];
+    worldLayers.forEach(layer => {
+        layer.className = "world-backdrop__scene";
+        world.appendChild(layer);
+    });
+    const veil = document.createElement("div");
+    veil.className = "world-backdrop__veil";
+    world.appendChild(veil);
+    document.body.insertBefore(world, document.body.firstChild);
+
     const sceneLayers = [document.createElement("div"), document.createElement("div")];
     sceneLayers.forEach(layer => {
         layer.className = "character-scene";
@@ -84,8 +97,13 @@
             if (request !== sceneRequest) return;
             const next = activeScene === 0 ? 1 : 0;
             sceneLayers[next].style.backgroundImage = `url("${url}")`;
+            worldLayers[next].style.setProperty("--world-image", `url("${url}")`);
             sceneLayers[next].classList.add("is-visible");
-            if (activeScene !== -1) sceneLayers[activeScene].classList.remove("is-visible");
+            worldLayers[next].classList.add("is-visible");
+            if (activeScene !== -1) {
+                sceneLayers[activeScene].classList.remove("is-visible");
+                worldLayers[activeScene].classList.remove("is-visible");
+            }
             activeScene = next;
             visibleScene = name;
         };
