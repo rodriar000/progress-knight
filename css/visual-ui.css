@@ -1,0 +1,87 @@
+@font-face {
+    font-family: "Fell English";
+    src: url("../fonts/IMFeENrm28P.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Medieval Sharp";
+    src: url("../fonts/MedievalSharp.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+body, button, input, .w3-button, .w3-table {
+    font-family: "Fell English", Georgia, serif;
+    font-size: 17px;
+    font-variant-numeric: oldstyle-nums;
+}
+
+.w3-table { font-size: 16px; }
+
+h1, h2, .tabButton, .headerRow,
+.character-panel__eyebrow, .character-panel__identity,
+.character-panel__location {
+    font-family: "Medieval Sharp", Georgia, serif;
+}
+
+h1 { font-size: 36px; letter-spacing: .025em; }
+.tabButton { font-size: 17px; }
+.headerRow { font-size: 17px; }
+.character-panel__eyebrow, .character-panel__location { letter-spacing: .12em; }
+.character-panel__identity { font-size: 21px; }
+.character-panel__identity span:last-child { font-family: "Medieval Sharp", Georgia, serif; }
+
+.has-info .progress-bar {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.has-info .progress-bar, .has-info .item-button { width: 190px; }
+.has-info .item-button { vertical-align: middle; }
+.has-info .progress-text { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.info-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    margin-left: 6px;
+    padding: 0;
+    vertical-align: middle;
+    border: 1px solid #806846;
+    border-radius: 50%;
+    background: #f0e5cd;
+    color: #40331f;
+    font: 700 17px "Fell English", Georgia, serif;
+    cursor: pointer;
+}
+
+.info-button:hover, .info-button[aria-expanded="true"] { background: #dcb878; }
+.info-button:focus-visible { outline: 2px solid #b77d36; outline-offset: 2px; }
+
+.dark .info-button {
+    border-color: #bba57f;
+    background: #313b48;
+    color: #f4e4c4;
+}
+
+.dark .info-button:hover, .dark .info-button[aria-expanded="true"] { background: #5d5140; }
+
+.description-row td {
+    padding: 12px 18px !important;
+    border-left: 3px solid #ac8250;
+    background: rgba(244, 234, 213, .96);
+    color: #30291f;
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+.dark .description-row td {
+    background: rgba(40, 45, 52, .97);
+    color: #f0e7d8;
+}
