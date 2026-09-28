@@ -120,15 +120,15 @@ const itemCategories = {
 }
 
 const headerRowColors = {
-    "Common work": "#55a630",
-    "Military": "#e63946",
-    "The Arcane Association": "#C71585",
-    "Fundamentals": "#4a4e69",
-    "Combat": "#ff704d",
-    "Magic": "#875F9A",
-    "Dark magic": "#73000f",
-    "Properties": "#219ebc",
-    "Misc": "#b56576",
+    "Common work": "#99815e",
+    "Military": "#946b5a",
+    "The Arcane Association": "#827399",
+    "Fundamentals": "#6f8490",
+    "Combat": "#9b745b",
+    "Magic": "#82759b",
+    "Dark magic": "#815c68",
+    "Properties": "#6b8b87",
+    "Misc": "#967d68",
 }
 
 const tooltips = {

@@ -1,0 +1,262 @@
+/* A quiet, readable ledger over the illustrated world. */
+.game-nav,
+.game-ledger {
+    --ledger-edge: rgba(112, 80, 45, .52);
+    --ledger-rule: rgba(102, 76, 48, .28);
+    --ledger-ink: #34291d;
+    --ledger-muted: #665a4b;
+    --ledger-row: rgba(255, 250, 236, .48);
+    color: var(--ledger-ink);
+    border: 1px solid var(--ledger-edge);
+    border-radius: 7px;
+    background:
+        repeating-linear-gradient(100deg, transparent 0 7px, rgba(110, 77, 42, .013) 8px 9px),
+        linear-gradient(155deg, rgba(247, 239, 218, .96), rgba(221, 209, 181, .93));
+    box-shadow: 0 16px 36px rgba(20, 15, 10, .24), inset 0 1px rgba(255, 255, 255, .62);
+    backdrop-filter: blur(10px);
+}
+
+.dark .game-nav,
+.dark .game-ledger {
+    --ledger-edge: rgba(184, 146, 92, .51);
+    --ledger-rule: rgba(202, 173, 126, .23);
+    --ledger-ink: #f0e7d2;
+    --ledger-muted: #c6b69c;
+    --ledger-row: rgba(18, 26, 31, .49);
+    background:
+        repeating-linear-gradient(100deg, transparent 0 7px, rgba(218, 183, 128, .012) 8px 9px),
+        linear-gradient(145deg, rgba(46, 43, 38, .96), rgba(27, 34, 38, .94));
+    box-shadow: 0 18px 38px rgba(0, 0, 0, .39), inset 0 1px rgba(255, 236, 199, .11);
+}
+
+.game-nav {
+    display: flex;
+    align-items: stretch;
+    gap: 3px;
+    padding: 3px 5px;
+}
+
+.game-nav .tabButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-width: 96px;
+    height: 32px;
+    padding: 0 13px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--ledger-muted);
+    background: transparent;
+    text-shadow: 0 1px rgba(255, 255, 255, .16);
+    transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+
+.game-nav .tabButton:last-child { margin-left: auto; float: none !important; }
+.game-nav .tabButton:hover,
+.dark .game-nav .tabButton:hover {
+    color: var(--ledger-ink) !important;
+    background: rgba(177, 140, 85, .18) !important;
+}
+
+.game-nav .tabButton.w3-blue-gray {
+    color: #382a18 !important;
+    border-color: rgba(143, 100, 49, .61);
+    background: linear-gradient(#e5c68d, #c99e60) !important;
+    box-shadow: inset 0 1px rgba(255, 246, 220, .67), 0 2px 7px rgba(31, 22, 13, .18);
+    text-shadow: none;
+}
+
+.dark .game-nav .tabButton.w3-blue-gray {
+    color: #fff0cf !important;
+    border-color: #b58951;
+    background: linear-gradient(#80643e, #624a30) !important;
+}
+
+.game-nav .tabButton:focus-visible,
+.game-ledger :is(.progress-bar, .item-button, .info-button):focus-visible {
+    outline: 2px solid #d5a45e;
+    outline-offset: 2px;
+}
+
+.game-ledger {
+    position: relative;
+    padding: 16px !important;
+    overflow: hidden;
+}
+
+.game-ledger::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    right: 18px;
+    left: 18px;
+    height: 1px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--ledger-edge) 12% 88%, transparent);
+}
+
+.game-ledger .w3-table {
+    border-collapse: separate;
+    border-spacing: 0 3px;
+    color: var(--ledger-ink);
+}
+
+.game-ledger .w3-bordered tr,
+.dark .game-ledger .w3-bordered tr { border-bottom: 0; }
+
+.game-ledger .w3-table td,
+.game-ledger .w3-table th { padding: 8px 10px; }
+
+.game-ledger .headerRow {
+    --section-accent: #99815e;
+    color: var(--ledger-ink) !important;
+    background: transparent !important;
+}
+
+.game-ledger .headerRow.Military,
+.game-ledger .headerRow.Combat { --section-accent: #946b5a; }
+.game-ledger .headerRow.TheArcaneAssociation,
+.game-ledger .headerRow.Magic { --section-accent: #827399; }
+.game-ledger .headerRow.Darkmagic { --section-accent: #815c68; }
+.game-ledger .headerRow.Fundamentals { --section-accent: #6f8490; }
+.game-ledger .headerRow.Properties { --section-accent: #6b8b87; }
+.game-ledger .headerRow.Misc { --section-accent: #967d68; }
+
+.game-ledger .headerRow th {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-top: 1px solid var(--ledger-edge);
+    border-bottom: 1px solid var(--ledger-edge);
+    background:
+        linear-gradient(90deg, color-mix(in srgb, var(--section-accent) 15%, transparent), transparent 72%),
+        rgba(105, 78, 47, .11);
+    box-shadow: inset 0 1px rgba(255, 255, 255, .23);
+    font-weight: 400;
+    letter-spacing: .02em;
+}
+
+.dark .game-ledger .headerRow th {
+    background:
+        linear-gradient(90deg, color-mix(in srgb, var(--section-accent) 24%, transparent), transparent 75%),
+        rgba(9, 14, 18, .47);
+    box-shadow: inset 0 1px rgba(245, 217, 169, .07);
+}
+
+.game-ledger .headerRow th:first-child {
+    border-left: 4px solid var(--section-accent);
+    border-radius: 3px 0 0 3px;
+}
+
+.game-ledger .headerRow th:last-child {
+    border-right: 1px solid var(--ledger-edge);
+    border-radius: 0 3px 3px 0;
+}
+
+.game-ledger .w3-table tr:not(.headerRow, .requiredRow, .description-row) td {
+    background: var(--ledger-row);
+    border-top: 1px solid var(--ledger-rule);
+    border-bottom: 1px solid var(--ledger-rule);
+}
+
+.game-ledger .w3-table tr:not(.headerRow, .requiredRow, .description-row) td:first-child {
+    border-left: 1px solid var(--ledger-rule);
+    border-radius: 3px 0 0 3px;
+}
+
+.game-ledger .w3-table tr:not(.headerRow, .requiredRow, .description-row) td:last-child {
+    border-right: 1px solid var(--ledger-rule);
+    border-radius: 0 3px 3px 0;
+}
+
+.game-ledger .requiredRow {
+    padding-top: 2px;
+    padding-bottom: 9px;
+    color: var(--ledger-muted) !important;
+    font-style: italic;
+}
+
+.dark .game-ledger :is(.income, .expense) span:nth-child(4) {
+    color: #dba276 !important;
+}
+
+.game-ledger .description-row td {
+    border-left: 3px solid #a87d4b;
+    background: rgba(242, 227, 195, .83);
+    color: var(--ledger-ink);
+}
+
+.dark .game-ledger .description-row td { background: rgba(18, 26, 30, .83); }
+
+.game-ledger .progress-bar,
+#quickTaskDisplay .progress-bar {
+    height: 32px;
+    overflow: hidden;
+    border: 1px solid #8e7858;
+    border-radius: 3px;
+    background: linear-gradient(#263744, #172630);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, .52), 0 1px rgba(255, 255, 255, .2);
+}
+
+.game-ledger .progress-fill,
+#quickTaskDisplay .progress-fill {
+    height: 100%;
+    background: linear-gradient(#698b90, #446a72 55%, #36565f);
+    box-shadow: inset 0 1px rgba(232, 248, 238, .3), 2px 0 5px rgba(0, 0, 0, .22);
+}
+
+.game-ledger .progress-fill.current,
+#quickTaskDisplay .progress-fill.current {
+    background: linear-gradient(#e7bf76, #b8843e 55%, #8d602b) !important;
+    box-shadow: inset 0 1px rgba(255, 246, 207, .74), 2px 0 8px rgba(183, 121, 44, .42);
+}
+
+.game-ledger .progress-text,
+#quickTaskDisplay .progress-text {
+    z-index: 1;
+    width: 100%;
+    padding: 3px 8px;
+    color: #fff2d7;
+    text-shadow: 0 1px 3px #0c1822, 1px 0 2px #0c1822;
+}
+
+.game-ledger .progress-bar:hover { border-color: #c8a268; filter: brightness(1.1); }
+
+.game-ledger .item-button {
+    border: 1px solid #8e7858 !important;
+    border-radius: 3px;
+    color: #f6e9d1;
+    background: linear-gradient(#3b484d, #253138);
+    box-shadow: inset 0 1px rgba(255, 255, 255, .16), 0 2px 4px rgba(0, 0, 0, .15);
+}
+
+.game-ledger .item-button:not(:disabled):hover {
+    color: #fff4d8;
+    border-color: #c8a268 !important;
+    background: linear-gradient(#516268, #35444a);
+}
+
+.game-ledger .item-button:disabled { opacity: .56; cursor: not-allowed; }
+
+.game-ledger .info-button {
+    border-color: #9d7e52;
+    background: linear-gradient(#e9d6ab, #c9a671);
+    color: #35281b;
+    box-shadow: inset 0 1px rgba(255, 255, 255, .58);
+}
+
+.dark .game-ledger .info-button {
+    border-color: #a48459;
+    background: linear-gradient(#695b47, #453c31);
+    color: #f4e5c7;
+}
+
+.game-ledger .info-button:hover,
+.game-ledger .info-button[aria-expanded="true"] { filter: brightness(1.16); }
+
+.game-ledger .w3-circle.w3-border { border-color: #957b58 !important; background: rgba(0, 0, 0, .17); }
+.game-ledger .w3-circle.active { box-shadow: inset 0 1px 3px rgba(0, 0, 0, .35); }
+
+@media (prefers-reduced-motion: reduce) {
+    .game-nav .tabButton { transition: none; }
+}
