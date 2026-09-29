@@ -155,7 +155,7 @@
     }
 
     function tick(now) {
-        const delta = previousTime ? Math.min(now - previousTime, 70) : 0;
+        const delta = previousTime ? Math.max(0, now - previousTime) : 0;
         previousTime = now;
         if (typeof gameData === "undefined" || !gameData.currentJob || !gameData.currentSkill) {
             requestAnimationFrame(tick);

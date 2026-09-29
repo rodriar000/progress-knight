@@ -39,28 +39,16 @@
     opacity: 0;
     transition: opacity .65s ease;
     background-image: var(--scene-image);
-    background-position: center 55%;
+    background-position: center 60%;
     background-repeat: no-repeat;
     background-size: cover;
-}
-
-.living-world__backdrop::before {
-    content: "";
-    position: absolute;
-    inset: -12px;
-    background: inherit;
-    filter: blur(8px);
-    opacity: .57;
 }
 
 .living-world__backdrop::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: inherit;
-    background-size: auto 100%;
-    -webkit-mask-image: linear-gradient(90deg, transparent 13%, black 35%, black 65%, transparent 87%);
-    mask-image: linear-gradient(90deg, transparent 13%, black 35%, black 65%, transparent 87%);
+    background: linear-gradient(90deg, rgba(20, 23, 22, .25), transparent 24%, transparent 76%, rgba(20, 23, 22, .25));
 }
 
 .living-world__backdrop.is-visible { opacity: 1; }
