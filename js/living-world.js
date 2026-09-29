@@ -134,16 +134,17 @@
 
     function syncPlayback() {
         const playing = visible && !document.hidden && typeof gameData !== "undefined" &&
-            !gameData.paused && (typeof isAlive !== "function" || isAlive()) && !reducedMotion.matches;
+            !gameData.paused && gameData.days < getLifespan() && !reducedMotion.matches;
         stage.classList.toggle("is-paused", !playing);
         for (const actor of [hero, rival]) {
             const slot = actor.slots[actor.active];
             const active = slot.video;
-            if (playing && !actor.element.hidden && !active.hidden && active.paused) {
+            const actorPlaying = playing && !actor.element.hidden;
+            if (actorPlaying && !active.hidden && active.paused) {
                 active.play().catch(() => {});
-            } else if (!playing && !active.paused) active.pause();
+            } else if (!actorPlaying && !active.paused) active.pause();
             if (!slot.image.hidden && !reducedMotion.matches) {
-                const desired = playing && !actor.element.hidden ? slot.image.dataset.animated : slot.image.dataset.poster;
+                const desired = actorPlaying ? slot.image.dataset.animated : slot.image.dataset.poster;
                 if (desired && slot.image.getAttribute("src") !== desired) slot.image.src = desired;
             }
         }
@@ -175,20 +176,43 @@
     let previousTime = 0;
     let displayed = "";
     let visible = false;
-    new IntersectionObserver(entries => {
-        visible = entries[0].isIntersecting;
-        previousTime = performance.now();
-        syncPlayback();
-    }, { rootMargin: "150px" }).observe(stage);
-    document.addEventListener("visibilitychange", syncPlayback);
+    let frameId = 0;
+    let stageWidth = actors.clientWidth;
+    new ResizeObserver(entries => {
+        stageWidth = entries[0].contentRect.width;
+        if (visible) refreshStage();
+    }).observe(actors);
 
-    function position(actor, fraction, size) {
-        actor.element.style.setProperty("--travel", `${(fraction - .5) * actors.clientWidth}px`);
-        actor.element.style.setProperty("--size", size);
+    function refreshStage() {
+        if (frameId) cancelAnimationFrame(frameId);
+        frameId = 0;
+        previousTime = 0;
+        syncPlayback();
+        if (visible && !document.hidden) tick(performance.now());
     }
 
-    function tick() {
-        const now = performance.now();
+    new IntersectionObserver(entries => {
+        visible = entries[0].isIntersecting;
+        refreshStage();
+    }, { rootMargin: "150px" }).observe(stage);
+    document.addEventListener("visibilitychange", refreshStage);
+    document.addEventListener("game-state-change", refreshStage);
+    reducedMotion.addEventListener("change", refreshStage);
+
+    function position(actor, fraction, size) {
+        if (actor.fraction !== fraction || actor.stageWidth !== stageWidth) {
+            actor.fraction = fraction;
+            actor.stageWidth = stageWidth;
+            actor.element.style.setProperty("--travel", `${(fraction - .5) * stageWidth}px`);
+        }
+        if (actor.size !== size) {
+            actor.size = size;
+            actor.element.style.setProperty("--size", size);
+        }
+    }
+
+    function tick(now) {
+        frameId = 0;
         const delta = previousTime ? Math.min(200, Math.max(0, now - previousTime)) : 0;
         previousTime = now;
         if (!visible || document.hidden || typeof gameData === "undefined" ||
@@ -196,13 +220,14 @@
             syncPlayback();
             return;
         }
-        const playing = !gameData.paused && (typeof isAlive !== "function" || isAlive());
+        const playing = !gameData.paused && gameData.days < getLifespan();
         if (playing && !reducedMotion.matches) clock += delta;
         const episode = Math.floor(clock / duration) % 2;
         const moment = clock % duration;
         const task = episode === 0 ? gameData.currentJob : gameData.currentSkill;
         const spec = episode === 0 ? actions[task.name] || actions.Beggar : practiceFor(task.name);
         const key = episode + ":" + task.name;
+        const sceneChanged = key !== displayed;
         if (key !== displayed) {
             displayed = key;
             showBackground(spec[1]);
@@ -211,9 +236,12 @@
             location.textContent = spec[2];
             markers.forEach((marker, index) => marker.classList.toggle("is-current", index === episode));
         }
-        jobText.textContent = `${gameData.currentJob.name} · LV ${gameData.currentJob.level}`;
-        skillText.textContent = `${gameData.currentSkill.name} · LV ${gameData.currentSkill.level}`;
-        ageText.textContent = `AGE ${Math.floor(gameData.days / 365)}`;
+        const jobLabel = `${gameData.currentJob.name} · LV ${gameData.currentJob.level}`;
+        const skillLabel = `${gameData.currentSkill.name} · LV ${gameData.currentSkill.level}`;
+        const ageLabel = `AGE ${Math.floor(gameData.days / 365)}`;
+        if (jobText.textContent !== jobLabel) jobText.textContent = jobLabel;
+        if (skillText.textContent !== skillLabel) skillText.textContent = skillLabel;
+        if (ageText.textContent !== ageLabel) ageText.textContent = ageLabel;
 
         const still = reducedMotion.matches;
         const entering = moment < approach && !still;
@@ -222,20 +250,27 @@
         const phase = walking ? "walk" : motionFor[spec[0]];
         const progressIn = Math.min(1, moment / approach);
         const progressOut = Math.max(0, (moment - (duration - depart)) / depart);
-        const x = walking ? (entering ? .12 + .38 * progressIn : .5 + .42 * progressOut) : .5;
+        const x = walking ? (entering ? -.22 + .72 * progressIn : .5 + .72 * progressOut) : .5;
         const duel = spec[0] === "duel" && !walking;
-        position(hero, duel ? .36 : x, duel ? .78 : 1);
-        hero.element.classList.toggle("is-walking", walking);
+        const duelBlend = duel ? Math.min(1, (moment - approach) / 700, (duration - depart - moment) / 700) : 0;
+        const oldHeroMotion = hero.motion;
+        const oldRivalMotion = rival.motion;
+        const rivalWasHidden = rival.element.hidden;
+        position(hero, duel ? .5 - .14 * duelBlend : x, 1 - .22 * duelBlend);
+        if (hero.walking !== walking) {
+            hero.walking = walking;
+            hero.element.classList.toggle("is-walking", walking);
+        }
         setMotion(hero, phase, still);
         setProp(hero, walking ? null : propFor[spec[0]] || null);
-        rival.element.hidden = !duel;
+        if (rival.element.hidden === duel) rival.element.hidden = !duel;
         if (duel) {
             position(rival, .72, .72);
             setMotion(rival, "train", still);
             setProp(rival, "sword");
         }
-        syncPlayback();
+        if (!playing || sceneChanged || hero.motion !== oldHeroMotion ||
+            rival.motion !== oldRivalMotion || rival.element.hidden !== rivalWasHidden) syncPlayback();
+        if (playing && !still) frameId = requestAnimationFrame(tick);
     }
-    setInterval(tick, 100);
-    tick();
 })();

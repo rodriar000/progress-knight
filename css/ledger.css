@@ -211,6 +211,9 @@
     box-shadow: inset 0 1px rgba(255, 246, 207, .74), 2px 0 8px rgba(183, 121, 44, .42);
 }
 
+.game-ledger .progress-fill,
+#quickTaskDisplay .progress-fill { transition: width .1s linear; }
+
 .game-ledger .progress-text,
 #quickTaskDisplay .progress-text {
     z-index: 1;
@@ -259,4 +262,5 @@
 
 @media (prefers-reduced-motion: reduce) {
     .game-nav .tabButton { transition: none; }
+    .game-ledger .progress-fill, #quickTaskDisplay .progress-fill { transition: none; }
 }

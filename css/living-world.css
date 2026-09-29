@@ -62,7 +62,6 @@
     aspect-ratio: 1;
     transform: translate3d(calc(-50% + var(--travel, 0px)), 0, 0) scale(var(--size, 1)) scaleX(var(--face, 1));
     transform-origin: 50% 100%;
-    transition: transform 110ms linear;
     will-change: transform;
 }
 .living-world__actor[hidden] { display: none; }
