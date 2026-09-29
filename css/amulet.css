@@ -1,0 +1,135 @@
+#rebirth {
+    --amulet-ink: #35291d;
+    --amulet-muted: #6d5841;
+    --amulet-rule: rgba(112, 78, 42, .35);
+    --amulet-card: rgba(255, 249, 231, .47);
+    color: var(--amulet-ink);
+}
+
+.dark #rebirth {
+    --amulet-ink: #f3e6ce;
+    --amulet-muted: #c7ad8b;
+    --amulet-rule: rgba(205, 165, 106, .35);
+    --amulet-card: rgba(15, 22, 28, .46);
+}
+
+.amulet-heading { text-align: center; padding: 10px 16px 25px; }
+.amulet-kicker,
+.amulet-display__overline,
+.amulet-chapter__age,
+.amulet-choice__label {
+    color: #916636;
+    font: 700 12px "Medieval Sharp", Georgia, serif;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+}
+.dark :is(.amulet-kicker, .amulet-display__overline, .amulet-chapter__age, .amulet-choice__label) { color: #d6aa6d; }
+.amulet-heading h2 {
+    margin: 5px 0 2px;
+    color: var(--amulet-ink);
+    font: 400 clamp(33px, 4vw, 49px) "Medieval Sharp", Georgia, serif;
+}
+.amulet-heading p { margin: 0; color: var(--amulet-muted); font-style: italic; }
+
+.amulet-layout {
+    display: grid;
+    grid-template-columns: minmax(235px, .8fr) minmax(0, 1.2fr);
+    gap: clamp(20px, 3vw, 42px);
+    max-width: 1120px;
+    margin: auto;
+    padding: 0 8px 22px;
+}
+
+.amulet-display {
+    align-self: start;
+    position: sticky;
+    top: 20px;
+    overflow: hidden;
+    border: 1px solid var(--amulet-rule);
+    border-radius: 135px 135px 5px 5px;
+    background: linear-gradient(155deg, rgba(243, 223, 177, .55), rgba(158, 120, 71, .14) 60%, rgba(76, 52, 34, .12));
+    box-shadow: inset 0 0 0 5px rgba(255, 248, 225, .2), 0 14px 32px rgba(42, 25, 9, .14);
+    text-align: center;
+}
+.dark .amulet-display {
+    background: radial-gradient(ellipse at 50% 35%, rgba(120, 83, 52, .36), transparent 68%), linear-gradient(#283139, #151e25);
+    box-shadow: inset 0 0 0 5px rgba(214, 176, 119, .05), 0 14px 32px rgba(0, 0, 0, .24);
+}
+.amulet-display__arch {
+    display: grid;
+    place-items: center;
+    min-height: 280px;
+    aspect-ratio: 1 / 1;
+    padding: 8px 13px 0;
+    background: radial-gradient(ellipse at 50% 54%, rgba(250, 228, 173, .36), transparent 63%);
+}
+.dark .amulet-display__arch { background: radial-gradient(ellipse at 50% 56%, rgba(175, 112, 55, .21), transparent 65%); }
+.amulet-display__arch img {
+    display: block;
+    width: min(100%, 365px);
+    height: 100%;
+    max-height: 380px;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 11px rgba(33, 19, 10, .3));
+}
+.amulet-display__caption { display: grid; gap: 3px; padding: 0 18px 18px; }
+.amulet-display__caption strong { font: 400 25px "Medieval Sharp", Georgia, serif; }
+.amulet-display__caption > span:last-child { color: var(--amulet-muted); font-style: italic; }
+.amulet-milestones {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin: 0 16px 20px;
+    padding: 11px 0 0;
+    list-style: none;
+    border-top: 1px solid var(--amulet-rule);
+}
+.amulet-milestones li { display: grid; gap: 1px; color: var(--amulet-muted); opacity: .55; }
+.amulet-milestones li.is-reached { opacity: 1; }
+.amulet-milestones li.is-current { color: #925b24; }
+.dark .amulet-milestones li.is-current { color: #f1c37a; }
+.amulet-milestones span { font: 21px "Medieval Sharp", Georgia, serif; }
+.amulet-milestones small { font-size: 12px; }
+
+.amulet-chronicle { min-width: 0; }
+.amulet-chapter { position: relative; margin: 0 0 19px; padding: 17px 22px 16px; border: 1px solid var(--amulet-rule); border-left: 3px solid #ac7a43; border-radius: 3px; background: var(--amulet-card); }
+.amulet-chapter::before { position: absolute; top: 5px; right: 6px; bottom: 5px; left: 6px; border: 1px solid rgba(157, 116, 65, .11); content: ""; pointer-events: none; }
+.amulet-chapter__heading { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+.amulet-chapter__number { display: grid; place-items: center; flex: 0 0 39px; height: 39px; border: 1px solid var(--amulet-rule); border-radius: 50%; color: #9d6d36; font: 25px "Medieval Sharp", Georgia, serif; }
+.dark .amulet-chapter__number { color: #e6be82; }
+.amulet-chapter h3 { margin: 0; color: var(--amulet-ink); font: 24px "Medieval Sharp", Georgia, serif; }
+.amulet-chapter p { margin: 0 0 10px; line-height: 1.5; }
+.amulet-chapter p:last-child { margin-bottom: 0; }
+.amulet-choice { margin: 17px 0 13px; padding: 15px 17px; border: 1px solid var(--amulet-rule); border-radius: 3px; background: rgba(158, 117, 64, .12); }
+.amulet-choice--dark { border-color: rgba(146, 78, 68, .62); background: rgba(130, 54, 52, .12); }
+.amulet-choice--dark .amulet-choice__label { color: #aa554c; }
+.dark .amulet-choice--dark .amulet-choice__label { color: #e39b8e; }
+.amulet-choice p { margin: 8px 0 13px; }
+#rebirth .amulet-choice__button {
+    min-height: 42px;
+    padding: 8px 19px;
+    border: 1px solid #986c3d !important;
+    border-radius: 3px;
+    color: #2c2015 !important;
+    background: linear-gradient(#e5c58b, #be8d4f) !important;
+    font: 19px "Medieval Sharp", Georgia, serif;
+    box-shadow: inset 0 1px rgba(255, 246, 222, .65), 0 3px 10px rgba(34, 20, 9, .19);
+}
+#rebirth .amulet-choice--dark .amulet-choice__button { border-color: #a46a5b !important; color: #fff2de !important; background: linear-gradient(#794a45, #573636) !important; }
+#rebirth .amulet-choice__button:hover { filter: brightness(1.12); }
+#rebirth .amulet-choice__button:focus-visible { outline: 2px solid #d6a660; outline-offset: 3px; }
+.amulet-whisper { color: var(--amulet-muted); font-style: italic; }
+
+@media (max-width: 800px) {
+    .amulet-layout { grid-template-columns: 1fr; }
+    .amulet-display { position: relative; top: auto; max-width: 500px; width: 100%; margin: auto; }
+    .amulet-display__arch { min-height: 220px; max-height: 300px; }
+    .amulet-display__arch img { max-height: 300px; }
+}
+@media (max-width: 480px) {
+    .amulet-heading { padding-bottom: 17px; }
+    .amulet-layout { padding: 0 0 8px; gap: 20px; }
+    .amulet-chapter { padding: 15px; }
+    .amulet-display__arch { min-height: 190px; max-height: 250px; }
+    .amulet-display__arch img { max-height: 250px; }
+}

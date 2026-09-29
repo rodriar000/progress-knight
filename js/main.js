@@ -603,9 +603,17 @@ function updateHeaderRows(categories) {
     }
 }
 
+const amuletStages = [
+    {age: 25, key: "copper", title: "The copper amulet", detail: "Unmarked, yet strangely familiar.", alt: "A worn copper amulet on a leather cord"},
+    {age: 45, key: "etched", title: "The first marking", detail: "An unfamiliar sigil appears in the copper.", alt: "A copper amulet with an engraved sigil"},
+    {age: 65, key: "eye", title: "The waking eye", detail: "Something alive watches from within.", alt: "A copper amulet with a living eye at its centre"},
+    {age: 200, key: "awakened", title: "The voice within", detail: "The amulet has found its voice.", alt: "A copper amulet with a living eye and a cackling mouth"}
+]
+
 function updateText() {
     //Sidebar
     document.getElementById("ageDisplay").textContent = daysToYears(gameData.days)
+    updateAmuletArtwork()
     document.getElementById("dayDisplay").textContent = getDay()
     document.getElementById("lifespanDisplay").textContent = daysToYears(getLifespan())
     var lifeProgress = Math.min(100, Math.max(0, gameData.days / getLifespan() * 100))
@@ -628,6 +636,31 @@ function updateText() {
 
     document.getElementById("timeWarpingDisplay").textContent = "x" + gameData.taskData["Time warping"].getEffect().toFixed(2)
     document.getElementById("timeWarpingButton").textContent = gameData.timeWarpingEnabled ? "Disable warp" : "Enable warp"
+}
+
+function updateAmuletArtwork() {
+    var age = daysToYears(gameData.days)
+    var stageIndex = 0
+    for (var i = 1; i < amuletStages.length; i++) {
+        if (age >= amuletStages[i].age) stageIndex = i
+    }
+    var stage = amuletStages[stageIndex]
+    var artwork = document.getElementById("amuletArtwork")
+    var discovered = age >= 25
+    if (artwork.dataset.stage == stage.key && artwork.dataset.discovered == String(discovered)) return
+
+    artwork.dataset.stage = stage.key
+    artwork.dataset.discovered = String(discovered)
+    artwork.src = "art/amulet/" + stage.key + ".webp"
+    artwork.alt = stage.alt
+    document.getElementById("amuletStageTitle").textContent = stage.title
+    document.getElementById("amuletStageDetail").textContent = stage.detail
+    document.querySelectorAll(".amulet-milestones li").forEach(function(milestone, index) {
+        milestone.classList.toggle("is-reached", age >= amuletStages[index].age)
+        milestone.classList.toggle("is-current", index == stageIndex && discovered)
+        if (index == stageIndex && discovered) milestone.setAttribute("aria-current", "step")
+        else milestone.removeAttribute("aria-current")
+    })
 }
 
 function setSignDisplay() {
