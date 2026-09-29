@@ -2,10 +2,8 @@
 // age and pause state; it never changes progression or the saved game.
 (function () {
     const stage = document.getElementById("livingWorld");
-    const canvas = document.getElementById("livingWorldCanvas");
-    if (!stage || !canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const actors = document.getElementById("livingWorldActors");
+    if (!stage || !actors) return;
 
     const view = document.getElementById("livingWorldView");
     const chapter = document.getElementById("worldChapter");
@@ -52,14 +50,49 @@
         return ["study", "study", "A quiet study", "Studying " + name.toLowerCase()];
     }
 
-    const sheets = {};
-    function getSheet(name) {
-        if (!sheets[name]) {
-            const image = new Image();
-            image.src = `art/motion/${name}.webp`;
-            sheets[name] = image;
-        }
-        return sheets[name];
+    // The browser composites these images and transforms. There is no full-scene
+    // canvas repaint on every animation frame.
+    const cache = new Map();
+    function sheetURL(name) { return `art/motion/${name}.webp`; }
+    function preload(name) {
+        if (cache.has(name)) return;
+        const image = new Image();
+        image.src = sheetURL(name);
+        cache.set(name, image);
+    }
+    preload("walk");
+
+    function createActor() {
+        const element = document.createElement("div");
+        element.className = "living-world__actor";
+        const images = [0, 1].map(() => {
+            const image = document.createElement("div");
+            image.className = "living-world__pose";
+            element.append(image);
+            return image;
+        });
+        actors.append(element);
+        return { element, images, visible: 0, pose: "" };
+    }
+    const hero = createActor();
+    const rival = createActor();
+    rival.element.hidden = true;
+
+    function setPose(actor, name, frame) {
+        const key = `${name}-${frame}`;
+        if (actor.pose === key) return;
+        actor.pose = key;
+        actor.element.style.setProperty("--aspect", name === "walk" ? "1" :
+            (name === "train" || name === "opponent") ? "1.05" : "1.5");
+        const next = 1 - actor.visible;
+        const columns = name === "walk" ? 3 : 2;
+        const image = actor.images[next];
+        image.style.backgroundImage = `url("${sheetURL(name)}")`;
+        image.style.backgroundSize = `${columns * 100}% 200%`;
+        image.style.backgroundPosition = `${(frame % columns) * 100 / (columns - 1)}% ${Math.floor(frame / columns) * 100}%`;
+        actor.images[next].classList.add("is-visible");
+        actor.images[actor.visible].classList.remove("is-visible");
+        actor.visible = next;
     }
 
     let activeBackground = -1;
@@ -81,88 +114,52 @@
         image.src = `art/scenes/${name}.webp`;
     }
 
-    let width = 0;
-    let height = 0;
-    function resize() {
-        const box = view.getBoundingClientRect();
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        width = box.width;
-        height = box.height;
-        canvas.width = Math.round(width * dpr);
-        canvas.height = Math.round(height * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-    }
-    new ResizeObserver(resize).observe(view);
-    resize();
-
     const duration = 11400;
     const approach = 2200;
     const depart = 1800;
     let clock = 0;
     let previousTime = 0;
     let displayed = "";
+    let onScreen = false;
+    const observer = new IntersectionObserver(entries => {
+        onScreen = entries[0].isIntersecting;
+        previousTime = performance.now();
+    }, { rootMargin: "150px" });
+    observer.observe(stage);
 
-    function drawSprite(name, frame, x, groundY, scale = 1) {
-        const image = getSheet(name);
-        if (!image.complete || !image.naturalWidth) return;
-        const columns = name === "walk" ? 3 : 2;
-        const rows = 2;
-        const cellW = image.width / columns;
-        const cellH = image.height / rows;
-        const maxWidth = name === "fish" ? width * .58 : width * .47;
-        const ratio = Math.min(height * .82 / cellH, maxWidth / cellW) * scale;
-        const drawW = cellW * ratio;
-        const drawH = cellH * ratio;
-        const frameCount = columns * rows;
-        const index = frame % frameCount;
-        ctx.drawImage(image, (index % columns) * cellW, Math.floor(index / columns) * cellH,
-            cellW, cellH, x - drawW / 2, groundY - drawH, drawW, drawH);
+    function position(actor, fraction, size) {
+        actor.element.style.setProperty("--travel", `${(fraction - .5) * actors.clientWidth}px`);
+        actor.element.style.setProperty("--size", size);
     }
 
-    function groundShadow(x, y, size) {
-        ctx.save();
-        ctx.fillStyle = "rgba(15, 14, 12, .28)";
-        ctx.filter = "blur(9px)";
-        ctx.beginPath();
-        ctx.ellipse(x, y, size, 8, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-    }
-
-    function drawMoment(spec, moment) {
-        ctx.clearRect(0, 0, width, height);
-        const still = reducedMotion.matches;
-        const isApproaching = moment < approach && !still;
-        const isLeaving = moment >= duration - depart && !still;
-        const walk = isApproaching || isLeaving;
-        const ground = height * .82;
+    function showMoment(spec, moment, still) {
+        const entering = moment < approach && !still;
+        const leaving = moment >= duration - depart && !still;
+        const walk = entering || leaving;
         const progressIn = Math.min(1, moment / approach);
         const progressOut = Math.max(0, (moment - (duration - depart)) / depart);
-        const x = walk ? width * (isApproaching ? .12 + .38 * progressIn : .5 + .42 * progressOut) : width * .5;
-        const frame = still ? 0 : Math.floor(moment / (walk ? 135 : 370));
-
-        if (spec[0] === "duel" && !walk) {
-            groundShadow(width * .72, ground, 72);
-            drawSprite("opponent", Math.floor(moment / 460) + 1, width * .72, ground, .72);
-            groundShadow(width * .32, ground, 75);
-            drawSprite("duel", frame, width * .36, ground, .78);
-        } else {
-            groundShadow(x - (spec[0] === "fish" && !walk ? 70 : 0), ground, 72);
-            drawSprite(walk ? "walk" : spec[0], frame, x, ground);
+        const x = walk ? (entering ? .12 + .38 * progressIn : .5 + .42 * progressOut) : .5;
+        const name = walk ? "walk" : spec[0];
+        const frame = still ? 0 : Math.floor(moment / (walk ? 180 : 450)) % (walk ? 6 : 4);
+        const duel = spec[0] === "duel" && !walk;
+        hero.element.classList.toggle("is-walking", walk);
+        hero.element.classList.toggle("is-working", !walk && !still);
+        position(hero, duel ? .36 : x, duel ? .78 : 1);
+        setPose(hero, name, frame);
+        rival.element.hidden = !duel;
+        if (duel) {
+            position(rival, .72, .72);
+            setPose(rival, "opponent", Math.floor(moment / 520 + 1) % 4);
         }
     }
 
-    function tick(now) {
-        const delta = previousTime ? Math.max(0, now - previousTime) : 0;
+    function tick() {
+        const now = performance.now();
+        const delta = previousTime ? Math.min(250, Math.max(0, now - previousTime)) : 0;
         previousTime = now;
-        if (typeof gameData === "undefined" || !gameData.currentJob || !gameData.currentSkill) {
-            requestAnimationFrame(tick);
-            return;
-        }
-
+        if (!onScreen || document.hidden || typeof gameData === "undefined" || !gameData.currentJob || !gameData.currentSkill) return;
         const playing = !gameData.paused && (typeof isAlive !== "function" || isAlive());
+        stage.classList.toggle("is-paused", !playing);
         if (playing && !reducedMotion.matches) clock += delta;
         const episode = Math.floor(clock / duration) % 2;
         const moment = clock % duration;
@@ -176,16 +173,17 @@
             action.textContent = spec[3];
             location.textContent = spec[2];
             markers.forEach((marker, index) => marker.classList.toggle("is-current", index === episode));
-            getSheet(spec[0]);
-            getSheet("walk");
-            if (spec[0] === "duel") getSheet("opponent");
+            preload(spec[0]);
+            if (spec[0] === "duel") preload("opponent");
         }
         jobText.textContent = `${gameData.currentJob.name} · LV ${gameData.currentJob.level}`;
         skillText.textContent = `${gameData.currentSkill.name} · LV ${gameData.currentSkill.level}`;
         ageText.textContent = `AGE ${Math.floor(gameData.days / 365)}`;
-        drawMoment(spec, reducedMotion.matches ? approach : moment);
-        requestAnimationFrame(tick);
+        showMoment(spec, reducedMotion.matches ? approach : moment, reducedMotion.matches);
     }
 
-    requestAnimationFrame(tick);
+    // The visual scene is sampled at 10 Hz; transform and opacity transitions
+    // are animated by the compositor between samples.
+    setInterval(tick, 100);
+    tick();
 })();
