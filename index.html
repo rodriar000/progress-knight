@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="css/visual-ui.css?v=2">
     <link rel="stylesheet" type="text/css" href="css/ledger.css?v=2">
     <link rel="stylesheet" type="text/css" href="css/status.css?v=1">
+    <link rel="stylesheet" type="text/css" href="css/amulet.css?v=1">
     <title>Progress Knight</title>
 </head>
 <body id="body" class="dark">
@@ -209,49 +210,58 @@
                 </div>
 
                 <div class="tab" id="rebirth">
-                    <ul>
-                        <li style="margin: 8px;">
-                            You stumble across a strange looking amulet on your 25th birthday. It does not look like
-                            it has any worth on the market given that it's made from cheap-looking copper. However, you
-                            feel a weird urge to keep the amulet, so you slip it into your pocket for safekeeping.
-                        </li>
-                        <li style="margin: 8px;" id="rebirthNote1">
-                            On your 45th birthday, you feel the amulet shiver uncontrollably in your pocket. You take it
-                            out and the constant shivering suddenly stops. More to your bizarre surprise, you notice
-                            a strange etching on the centre of the amulet.
-                        </li>
-                        <li style="margin: 8px;" id="rebirthNote2">
-                            <div style="margin-bottom: 8px">
-                                On your 65th birthday, you once again encounter the strange, unexplained shivering from your
-                                amulet. But this time, a living eyeball emerges from the centre. Although terribly frightened,
-                                you realise you do not have many years to live left anyway so you consider touching the eye
-                                to see what happens.
+                    <div class="amulet-heading">
+                        <span class="amulet-kicker">A chronicle of many lives</span>
+                        <h2>The Amulet</h2>
+                        <p>Some things only reveal themselves with time.</p>
+                    </div>
+                    <div class="amulet-layout">
+                        <div class="amulet-display">
+                            <div class="amulet-display__arch">
+                                <img id="amuletArtwork" src="art/amulet/copper.webp" width="720" height="790" alt="A worn copper amulet on a leather cord">
                             </div>
-                            <i style="color: grey">
-                                By touching the eyeball, you will be reborn and have to restart life again, losing all your levels and coins.
-                                However, you will gain <b>xp multipliers</b> for your jobs and skills equivalent to: <b>1 + the max level of the skill or job / 10.</b>
-                                This means you will learn everything again much more quickly than you did in your previous life. <span style="color: rgb(200, 0, 0)">
-                                Something tells you that the amulet might transform even further after living for <b>2 whole centuries</b>...</span>
-                            </i>
-                            </br>
-                            <button class="w3-button button" style="margin-bottom: 8px; margin-top: 8px" onClick="rebirthOne()">Touch the eye</button>
-                            </br>
-                        </li>
-                        <li style="margin: 8px;" id="rebirthNote3">
-                            <div style="margin-bottom: 8px;">
-                                Your gut instinct was right. The moment you hit the grand age of 200, you hear an ominous hum coming from the amulet.
-                                A mouth emerges from its surface and begins to cackle, and proceeds to say: "So you've made it this far... Are you ready to embrace evil?"
+                            <div class="amulet-display__caption">
+                                <span class="amulet-display__overline">The relic in your hands</span>
+                                <strong id="amuletStageTitle">The copper amulet</strong>
+                                <span id="amuletStageDetail">Unmarked, yet strangely familiar.</span>
                             </div>
-                            <i style="color: rgb(200, 0, 0)">
-                                If you decide to embrace evil, all of your levels, coins and even max levels will be reset.
-                                You will be reborn as a fresh slate. However, you will unlock a new line of skills and gain
-                                <b><span id="evilGainDisplay"></span> evil</b>, which will heavily impact your future lives.
-                            </i>
-                            </br>
-                                <button class="w3-button button" style="margin-bottom: 8px; margin-top: 8px" onClick="rebirthTwo()">Embrace evil</button>
-                            </br>
-                        </li>
-                    </ul>
+                            <ol class="amulet-milestones" aria-label="Amulet transformations">
+                                <li data-amulet-stage="copper"><span>25</span><small>Found</small></li>
+                                <li data-amulet-stage="etched"><span>45</span><small>Etched</small></li>
+                                <li data-amulet-stage="eye"><span>65</span><small>Awake</small></li>
+                                <li data-amulet-stage="awakened"><span>200</span><small>Beyond</small></li>
+                            </ol>
+                        </div>
+                        <div class="amulet-chronicle">
+                            <div class="amulet-chapter">
+                                <div class="amulet-chapter__heading"><span class="amulet-chapter__number">I</span><div><span class="amulet-chapter__age">Age 25</span><h3>A curious find</h3></div></div>
+                                <p>You stumble across a strange looking amulet on your 25th birthday. It does not look like it has any worth on the market given that it's made from cheap-looking copper. However, you feel a weird urge to keep it, so you slip it into your pocket for safekeeping.</p>
+                            </div>
+                            <div class="amulet-chapter" id="rebirthNote1">
+                                <div class="amulet-chapter__heading"><span class="amulet-chapter__number">II</span><div><span class="amulet-chapter__age">Age 45</span><h3>The first marking</h3></div></div>
+                                <p>On your 45th birthday, the amulet shivers uncontrollably in your pocket. When you take it out, it falls still. A strange etching has appeared at its centre.</p>
+                            </div>
+                            <div class="amulet-chapter" id="rebirthNote2">
+                                <div class="amulet-chapter__heading"><span class="amulet-chapter__number">III</span><div><span class="amulet-chapter__age">Age 65</span><h3>The eye opens</h3></div></div>
+                                <p>The shivering returns. A living eye emerges from the copper. With the years catching up to you, you consider reaching out and touching it.</p>
+                                <div class="amulet-choice">
+                                    <span class="amulet-choice__label">A new life</span>
+                                    <p><strong>You lose:</strong> current levels and coins. <strong>You keep:</strong> your highest levels, granting job and skill xp multipliers of <b>1 + max level / 10</b> in future lives.</p>
+                                    <button class="w3-button button amulet-choice__button" onClick="rebirthOne()">Touch the eye</button>
+                                </div>
+                                <p class="amulet-whisper">The amulet may transform further after two whole centuries...</p>
+                            </div>
+                            <div class="amulet-chapter" id="rebirthNote3">
+                                <div class="amulet-chapter__heading"><span class="amulet-chapter__number">IV</span><div><span class="amulet-chapter__age">Age 200</span><h3>The voice within</h3></div></div>
+                                <p>An ominous hum rises from the amulet. A mouth emerges and cackles: “So you've made it this far... Are you ready to embrace evil?”</p>
+                                <div class="amulet-choice amulet-choice--dark">
+                                    <span class="amulet-choice__label">A darker beginning</span>
+                                    <p><strong>You lose:</strong> levels, coins and highest levels. <strong>You gain:</strong> a new line of skills and <b><span id="evilGainDisplay"></span> evil</b> for future lives.</p>
+                                    <button class="w3-button button amulet-choice__button" onClick="rebirthTwo()">Embrace evil</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="tab" id="settings">
