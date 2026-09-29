@@ -74,4 +74,10 @@ test("validates an older save and rejects dangerous partial imports", () => {
     const brokenRequirement = save();
     brokenRequirement.requirements.Automation = null;
     assert.throws(() => validate(brokenRequirement, jobs, skills, items), /requirement/);
+    const withHistory = save();
+    withHistory.lifeChronicle = [{number: 1, age: 70, kind: "ordinary", newPeaks: 3,
+        evilGained: 0, job: {name: "Beggar", level: 22}, skill: {name: "Concentration", level: 18}}];
+    assert.equal(validate(withHistory, jobs, skills, items).lifeChronicle.length, 1);
+    withHistory.lifeChronicle[0].job.name = "Unknown";
+    assert.throws(() => validate(withHistory, jobs, skills, items), /life chronicle/);
 });

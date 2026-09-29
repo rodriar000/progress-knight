@@ -78,6 +78,23 @@ var SaveSafety = (function () {
         }
         if (data.preferences !== undefined && !isRecord(data.preferences)) throw new Error("Invalid preferences");
 
+        if (data.lifeChronicle !== undefined) {
+            if (!Array.isArray(data.lifeChronicle) || data.lifeChronicle.length > 1000 ||
+                data.lifeChronicle.some(entry => !isRecord(entry) ||
+                    !Number.isSafeInteger(entry.number) || entry.number < 1 ||
+                    !Number.isSafeInteger(entry.age) || entry.age < 14 ||
+                    !Number.isSafeInteger(entry.newPeaks) || entry.newPeaks < 0 ||
+                    !isNonNegative(entry.evilGained) ||
+                    !["ordinary", "dark"].includes(entry.kind) ||
+                    !isRecord(entry.job) || !isRecord(entry.skill) ||
+                    !Object.prototype.hasOwnProperty.call(jobs, entry.job.name) ||
+                    !Object.prototype.hasOwnProperty.call(skills, entry.skill.name) ||
+                    !Number.isSafeInteger(entry.job.level) || entry.job.level < 0 ||
+                    !Number.isSafeInteger(entry.skill.level) || entry.skill.level < 0)) {
+                throw new Error("Invalid life chronicle");
+            }
+        }
+
         function knownName(pointer, catalogue) {
             return isRecord(pointer) && typeof pointer.name === "string" &&
                 Object.prototype.hasOwnProperty.call(catalogue, pointer.name);
