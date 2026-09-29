@@ -18,6 +18,7 @@ var gameData = {
 
     rebirthOneCount: 0,
     rebirthTwoCount: 0,
+    lifeChronicle: [],
 
     currentJob: null,
     currentSkill: null,
@@ -48,7 +49,7 @@ const baseLifespan = 365 * 70
 
 const baseGameSpeed = 4
 
-const permanentUnlocks = ["Scheduling", "Shop", "Automation", "Quick task display"]
+const permanentUnlocks = ["Scheduling", "Shop", "Automation", "Quick task display", "Rebirth tab"]
 
 const jobBaseData = {
     "Beggar": {name: "Beggar", maxXp: 50, income: 5},
@@ -716,6 +717,45 @@ function updateAmuletArtwork() {
     })
 }
 
+function renderLifeChronicle() {
+    var current = document.getElementById("currentLifeRecord")
+    var number = LifeChronicle.currentNumber(gameData)
+    var signature = [number, Math.floor(gameData.days / 365), gameData.currentJob.name,
+        gameData.currentJob.level, gameData.currentSkill.name, gameData.currentSkill.level].join("|")
+    if (current.dataset.signature === signature) return
+    current.dataset.signature = signature
+    current.textContent = "Life " + number + " · Age " + Math.floor(gameData.days / 365) +
+        " · " + gameData.currentJob.name + " level " + gameData.currentJob.level +
+        " · " + gameData.currentSkill.name + " level " + gameData.currentSkill.level + ". Still being written."
+
+    var records = document.getElementById("lifeRecords")
+    var lastRecord = gameData.lifeChronicle.at(-1)
+    var recordSignature = gameData.lifeChronicle.length + ":" + (lastRecord ? lastRecord.number : 0)
+    if (records.dataset.signature !== recordSignature) {
+        records.dataset.signature = recordSignature
+        records.replaceChildren(...gameData.lifeChronicle.slice().reverse().map(function(entry) {
+            var item = document.createElement("li")
+            var title = document.createElement("strong")
+            title.textContent = "Life " + entry.number + " · Age " + entry.age +
+                (entry.kind === "dark" ? " · Dark rebirth" : " · Rebirth")
+            var work = document.createElement("span")
+            work.textContent = entry.job.name + " level " + entry.job.level + " · " +
+                entry.skill.name + " level " + entry.skill.level
+            var legacy = document.createElement("small")
+            legacy.textContent = entry.kind === "dark" ?
+                "Past peaks relinquished · +" + entry.evilGained.toFixed(1) + " evil" :
+                entry.newPeaks + " new peak" + (entry.newPeaks === 1 ? "" : "s") + " preserved"
+            item.append(title, work, legacy)
+            return item
+        }))
+    }
+    var missing = number - 1 - gameData.lifeChronicle.length
+    var notice = document.getElementById("earlierLivesNotice")
+    notice.hidden = missing === 0
+    if (missing > 0) notice.textContent = missing + " earlier " + (missing === 1 ? "life was" : "lives were") +
+        " played before this chronicle began. Their details were not saved."
+}
+
 function setSignDisplay() {
     var signDisplay = document.getElementById("signDisplay")
     if (getIncome() > getExpense()) {
@@ -928,21 +968,26 @@ function removeSpaces(string) {
 }
 
 function rebirthOne() {
+    gameData.lifeChronicle = LifeChronicle.append(gameData, "ordinary", 0)
     gameData.rebirthOneCount += 1
 
     rebirthReset()
+    saveGameData()
 }
 
 function rebirthTwo() {
+    var evilGained = getEvilGain()
+    gameData.lifeChronicle = LifeChronicle.append(gameData, "dark", evilGained)
     gameData.rebirthTwoCount += 1
-    gameData.evil += getEvilGain()
+    gameData.evil += evilGained
 
     rebirthReset()
 
     for (taskName in gameData.taskData) {
         var task = gameData.taskData[taskName]
         task.maxLevel = 0
-    }    
+    }
+    saveGameData()
 }
 
 function rebirthReset() {
@@ -1139,6 +1184,8 @@ function updateUI() {
     } else if (activeTab === "shop") {
         updateItemRows()
         updateRequiredRows(gameData.itemData, itemCategories)
+    } else if (activeTab === "rebirth") {
+        renderLifeChronicle()
     }
     updateQuickTaskDisplay("job")
     updateQuickTaskDisplay("skill")
