@@ -78,6 +78,16 @@
     const rival = createActor();
     rival.element.hidden = true;
 
+    // Transparent padding differs between rows in the original sheets.
+    // Keep the bottom of each pose on the same ground line.
+    const floorMargins = {
+        beg: [5, 4, 7, 5], duel: [3, 8, 13, 11], farm: [2, 1, 31, 32],
+        fish: [0, 5, 36, 23], forge: [2, 1, 23, 21], magic: [0, 0, 5, 6],
+        mine: [0, 0, 44, 35], opponent: [5, 5, 20, 30],
+        study: [12, 0, 9, 9], trade: [0, 0, 7, 8], train: [3, 1, 24, 21],
+        walk: [0, 0, 0, 28, 27, 28]
+    };
+
     function setPose(actor, name, frame) {
         const key = `${name}-${frame}`;
         if (actor.pose === key) return;
@@ -90,6 +100,7 @@
         image.style.backgroundImage = `url("${sheetURL(name)}")`;
         image.style.backgroundSize = `${columns * 100}% 200%`;
         image.style.backgroundPosition = `${(frame % columns) * 100 / (columns - 1)}% ${Math.floor(frame / columns) * 100}%`;
+        image.style.top = `${floorMargins[name][frame] / (name === "train" || name === "opponent" ? 480 : 384) * 100}%`;
         actor.images[next].classList.add("is-visible");
         actor.images[actor.visible].classList.remove("is-visible");
         actor.visible = next;
