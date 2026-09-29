@@ -30,12 +30,15 @@ var skillWithLowestMaxXp = null
 
 const autoPromoteElement = document.getElementById("autoPromote")
 const autoLearnElement = document.getElementById("autoLearn")
+var activeTab = "jobs"
+var lastUiUpdateAt = 0
 
 const updateSpeed = 20
 const tickDuration = 1000 / updateSpeed
-const maxCatchUpTicks = 2000
+const maxCatchUpTicks = 200
 var catchUpScheduled = false
 var ticksSinceSkillRefresh = updateSpeed
+var pauseAt = null
 
 const baseLifespan = 365 * 70
 
@@ -364,6 +367,7 @@ function goBankrupt() {
 }
 
 function setTab(element, selectedTab) {
+    activeTab = selectedTab
 
     var tabs = Array.prototype.slice.call(document.getElementsByClassName("tab"))
     tabs.forEach(function(tab) {
@@ -376,28 +380,54 @@ function setTab(element, selectedTab) {
         tabButton.classList.remove("w3-blue-gray")
     }
     element.classList.add("w3-blue-gray")
+    renderUI(true)
 }
 
 function setPause() {
-    if (!gameData.paused) update()
-    gameData.paused = !gameData.paused
+    if (pauseAt !== null) {
+        pauseAt = null
+        renderUI(true)
+        return
+    }
+    if (!gameData.paused) {
+        pauseAt = Date.now()
+        update()
+        renderUI(true)
+        return
+    }
+    gameData.paused = false
     gameData.lastUpdateAt = Date.now()
     saveGameData()
+    renderUI(true)
+    document.dispatchEvent(new Event("game-state-change"))
+}
+
+function finishPause() {
+    gameData.paused = true
+    gameData.lastUpdateAt = pauseAt
+    pauseAt = null
+    saveGameData()
+    renderUI(true)
+    document.dispatchEvent(new Event("game-state-change"))
 }
 
 function setTimeWarping() {
     gameData.timeWarpingEnabled = !gameData.timeWarpingEnabled
     saveGameData()
+    renderUI(true)
 }
 
 function setTask(taskName) {
     var task = gameData.taskData[taskName]
     task instanceof Job ? gameData.currentJob = task : gameData.currentSkill = task
+    renderUI(true)
+    document.dispatchEvent(new Event("game-state-change"))
 }
 
 function setProperty(propertyName) {
     var property = gameData.itemData[propertyName]
     gameData.currentProperty = property
+    renderUI(true)
 }
 
 function setMisc(miscName) {
@@ -411,6 +441,7 @@ function setMisc(miscName) {
     } else {
         gameData.currentMisc.push(misc)
     }
+    renderUI(true)
 }
 
 function createData(data, baseData) {
@@ -563,8 +594,8 @@ function updateRequiredRows(data, categoryType) {
     }
 }
 
-function updateTaskRows() {
-    for (key in gameData.taskData) {
+function updateTaskRows(baseData) {
+    for (key in baseData) {
         var task = gameData.taskData[key]
         var row = document.getElementById("row " + task.name)
         row.getElementsByClassName("level")[0].textContent = task.level
@@ -639,7 +670,7 @@ function updateText() {
     lifeMeter.setAttribute("aria-valuenow", Math.round(lifeProgress))
     lifeMeter.classList.toggle("is-late", lifeProgress >= 85)
     document.getElementById("lifeMeterFill").style.width = lifeProgress + "%"
-    document.getElementById("pauseButton").textContent = gameData.paused ? "Play" : "Pause"
+    document.getElementById("pauseButton").textContent = pauseAt !== null ? "Pausing..." : gameData.paused ? "Play" : "Pause"
 
     formatCoins(gameData.coins, document.getElementById("coinDisplay"))
     setSignDisplay()
@@ -932,6 +963,7 @@ function rebirthTwo() {
 function rebirthReset() {
     setTab(jobTabButton, "jobs")
 
+    pauseAt = null
     gameData.coins = 0
     gameData.days = 365 * 14
     gameData.lastUpdateAt = Date.now()
@@ -952,6 +984,8 @@ function rebirthReset() {
         if (requirement.completed && permanentUnlocks.includes(key)) continue
         requirement.completed = false
     }
+    renderUI(true)
+    document.dispatchEvent(new Event("game-state-change"))
 }
 
 function getLifespan() {
@@ -1091,17 +1125,30 @@ function loadGameData() {
 }
 
 function updateUI() {
-    updateTaskRows()
-    updateItemRows()
-    updateRequiredRows(gameData.taskData, jobCategories)
-    updateRequiredRows(gameData.taskData, skillCategories)
-    updateRequiredRows(gameData.itemData, itemCategories)
-    updateHeaderRows(jobCategories)
-    updateHeaderRows(skillCategories)
+    if (activeTab === "jobs") {
+        updateTaskRows(jobBaseData)
+        updateRequiredRows(gameData.taskData, jobCategories)
+        updateHeaderRows(jobCategories)
+    } else if (activeTab === "skills") {
+        updateTaskRows(skillBaseData)
+        updateRequiredRows(gameData.taskData, skillCategories)
+        updateHeaderRows(skillCategories)
+    } else if (activeTab === "shop") {
+        updateItemRows()
+        updateRequiredRows(gameData.itemData, itemCategories)
+    }
     updateQuickTaskDisplay("job")
     updateQuickTaskDisplay("skill")
     hideEntities()
-    updateText()  
+    updateText()
+}
+
+function renderUI(force) {
+    if (document.hidden && !force) return
+    const now = performance.now()
+    if (!force && now - lastUiUpdateAt < 100) return
+    lastUiUpdateAt = now
+    updateUI()
 }
 
 function advanceGameTick() {
@@ -1114,10 +1161,10 @@ function advanceGameTick() {
 }
 
 function update() {
-    const now = Date.now()
+    const now = pauseAt === null ? Date.now() : pauseAt
     if (gameData.paused || !isAlive()) {
         gameData.lastUpdateAt = now
-        updateUI()
+        if (pauseAt !== null) finishPause()
         return
     }
 
@@ -1139,7 +1186,8 @@ function update() {
         gameData.lastUpdateAt += tickDuration
     }
 
-    if (ticks > 0) updateUI()
+    if (ticks > 0) renderUI()
+    if (pauseAt !== null && pendingTicks <= maxCatchUpTicks) finishPause()
     if (pendingTicks > maxCatchUpTicks && !catchUpScheduled) {
         catchUpScheduled = true
         setTimeout(function() {
@@ -1315,12 +1363,12 @@ update()
 setInterval(update, 1000 / updateSpeed)
 setInterval(saveGameData, 3000)
 autoPromoteElement.addEventListener("change", saveGameData)
-autoLearnElement.addEventListener("change", saveGameData)
+autoLearnElement.addEventListener("change", function() { saveGameData(); renderUI(true) })
 document.getElementById("skillTable").addEventListener("change", function(event) {
     if (event.target.classList.contains("checkbox")) saveGameData()
 })
 document.addEventListener("visibilitychange", function() {
     if (document.hidden) saveGameData()
-    else update()
+    else { update(); renderUI(true) }
 })
 window.addEventListener("pagehide", saveGameData)
