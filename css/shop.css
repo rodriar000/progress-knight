@@ -1,0 +1,95 @@
+#shop { color: var(--ledger-ink); }
+
+.shop-heading {
+    position: relative;
+    margin: 2px 4px 15px;
+    padding: 15px 18px 14px;
+    border: 1px solid var(--ledger-rule);
+    border-radius: 4px;
+    background: linear-gradient(100deg, rgba(170, 119, 63, .15), rgba(234, 205, 148, .07) 70%);
+}
+.dark .shop-heading { background: linear-gradient(100deg, rgba(152, 105, 57, .2), rgba(10, 18, 22, .08) 75%); }
+.shop-heading::after {
+    position: absolute;
+    right: 16px;
+    bottom: 10px;
+    color: rgba(140, 99, 57, .19);
+    content: "✦";
+    font: 62px "Medieval Sharp", Georgia, serif;
+    line-height: 1;
+    pointer-events: none;
+}
+.shop-heading__kicker {
+    color: #8e653c;
+    font: 700 11px "Medieval Sharp", Georgia, serif;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+.dark .shop-heading__kicker { color: #d1a66f; }
+.shop-heading h2 { margin: 3px 0 1px; color: var(--ledger-ink); font: 29px "Medieval Sharp", Georgia, serif; }
+.shop-heading p { position: relative; z-index: 1; max-width: 600px; margin: 0; color: var(--ledger-muted); font-size: 16px; }
+
+#itemTable { width: 100%; }
+#itemTable .shop-item-row td { height: 68px; }
+#itemTable .shop-item-row td:first-child { white-space: nowrap; }
+#itemTable .item-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    width: 190px;
+    height: 58px;
+    padding: 3px 6px;
+    line-height: 1.05;
+    text-align: left;
+    white-space: normal;
+}
+#itemTable .shop-item-art {
+    display: block;
+    flex: 0 0 52px;
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    border-radius: 3px;
+    background: radial-gradient(ellipse at 50% 62%, rgba(231, 196, 137, .28), rgba(179, 137, 78, .08) 65%, transparent 80%);
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .3));
+}
+#itemTable .item-button .name { overflow-wrap: anywhere; }
+#itemTable .shop-item-row .effect { font-size: 15px; line-height: 1.15; }
+
+#itemTable .shop-item-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ledger-muted);
+    font: 13px "Medieval Sharp", Georgia, serif;
+    white-space: nowrap;
+}
+#itemTable .shop-item-state__seal {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    border: 1px solid var(--ledger-rule);
+    border-radius: 50%;
+    color: transparent;
+    font-size: 13px;
+}
+#itemTable .shop-item-row.is-active .shop-item-state { color: #805626; }
+.dark #itemTable .shop-item-row.is-active .shop-item-state { color: #ecc486; }
+#itemTable .shop-item-row.is-active .shop-item-state__seal {
+    border-color: #986a39;
+    color: #fff5d9;
+    background: linear-gradient(#c39a60, #9d6c38);
+    box-shadow: inset 0 1px rgba(255, 248, 226, .5), 0 1px 4px rgba(79, 47, 19, .25);
+}
+.game-ledger #itemTable .shop-item-row.is-active td { background: rgba(211, 169, 98, .22); }
+.dark .game-ledger #itemTable .shop-item-row.is-active td { background: rgba(162, 111, 52, .19); }
+.game-ledger #itemTable .shop-item-row.is-active td:first-child { border-left: 3px solid #bc884c; }
+#itemTable .shop-item-row.is-active .item-button { border-color: #c39154 !important; box-shadow: inset 0 1px rgba(255, 240, 204, .26), 0 0 0 1px rgba(184, 131, 67, .2); }
+#itemTable .shop-item-row:not(.is-active):hover td { background: rgba(197, 166, 110, .18); }
+.dark #itemTable .shop-item-row:not(.is-active):hover td { background: rgba(116, 91, 62, .25); }
+
+@media (prefers-reduced-motion: reduce) {
+    #itemTable .item-button { transition: none; }
+}

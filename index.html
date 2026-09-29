@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="css/ledger.css?v=2">
     <link rel="stylesheet" type="text/css" href="css/status.css?v=1">
     <link rel="stylesheet" type="text/css" href="css/amulet.css?v=1">
+    <link rel="stylesheet" type="text/css" href="css/shop.css?v=1">
     <title>Progress Knight</title>
 </head>
 <body id="body" class="dark">
@@ -154,19 +155,16 @@
                 </template>
 
                 <template class="rowItemTemplate">
-                    <tr>
+                    <tr class="shop-item-row">
                         <td>
-                            
                             <button class="button item-button tooltip">
+                                <img class="shop-item-art" width="52" height="52" alt="" loading="lazy" decoding="async">
                                 <span class="name"></span>
                                 <span class="tooltipText">tooltip</span>
                             </button>
-                            
                         </td>
                         <td>
-                            <div class="w3-border w3-circle" style="width: 40px; height: 40px; padding: 7px">
-                                <div class="active w3-circle" style="width: 24px; height: 24px;"></div>
-                            </div>
+                            <span class="shop-item-state"><span class="shop-item-state__seal" aria-hidden="true">✦</span><span class="shop-item-state__text">Inactive</span></span>
                         </td>
                         <td class="effect"></td>
                         <td class="expense">
@@ -205,6 +203,11 @@
                 </div>
 
                 <div class="tab" id="shop">
+                    <div class="shop-heading">
+                        <span class="shop-heading__kicker">The merchant's ledger</span>
+                        <h2>Goods &amp; Lodgings</h2>
+                        <p>Choose where you live and which possessions accompany you. Expenses are paid each day.</p>
+                    </div>
                     <table id="itemTable" class="w3-table w3-bordered">
                     </table>
                 </div>
