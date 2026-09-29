@@ -17,3 +17,9 @@ Progress Knight can be played on the following sites:
 - [Github Pages](https://ihtasham42.github.io/progress-knight/)  
 - [Armor Games](https://armorgames.com/progress-knight-game/19095)
 - [Crazy Games](https://www.crazygames.com/game/progress-knight)
+
+### Saves in this fork
+
+The published game keeps its existing `gameDataSave` browser storage key, so earlier saves continue to load. The `/preview/` build copies that save once into `gameDataSave:preview` and then saves independently. Resetting either build affects only its own active save. If stored data cannot be loaded, the original is preserved under a recovery key and can be viewed in Settings.
+
+Save codes from earlier versions remain importable. Imports are checked before replacing the current save. Run the save checks with `node --test tests/*.test.js`.
