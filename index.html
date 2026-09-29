@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="css/status.css?v=1">
     <link rel="stylesheet" type="text/css" href="css/amulet.css?v=1">
     <link rel="stylesheet" type="text/css" href="css/shop.css?v=1">
+    <link rel="stylesheet" type="text/css" href="css/living-world.css?v=6">
     <title>Progress Knight</title>
 </head>
 <body id="body" class="dark">
@@ -95,6 +96,26 @@
             </aside>
 
             <main class="game-content">
+
+            <section class="living-world" id="livingWorld" aria-label="Your character's daily life">
+                <div class="living-world__heading">
+                    <span class="living-world__eyebrow">A LIFE IN MOTION</span>
+                    <span class="living-world__age" id="worldAge">AGE 14</span>
+                </div>
+                <div class="living-world__view" id="livingWorldView">
+                    <div class="living-world__backdrop" aria-hidden="true"></div>
+                    <div class="living-world__backdrop" aria-hidden="true"></div>
+                    <div class="living-world__actors" id="livingWorldActors" aria-hidden="true"></div>
+                    <div class="living-world__ground" aria-hidden="true"></div>
+                    <div class="living-world__caption">
+                        <span class="living-world__chapter" id="worldChapter">AT WORK</span>
+                        <strong id="worldAction">Finding a way forward</strong>
+                        <span id="worldLocation">Old quarter</span>
+                    </div>
+                    <div class="living-world__sequence" aria-hidden="true"><span id="worldWorkMarker"></span><span id="worldSkillMarker"></span></div>
+                </div>
+                <div class="living-world__footer"><span id="worldJob">Beggar</span><span aria-hidden="true">✦</span><span id="worldSkill">Concentration</span></div>
+            </section>
 
             <nav class="panel game-nav" aria-label="Game sections">
                 <div class="w3-button w3-bar-item tabButton" id="jobTabButton" onClick="setTab(this, 'jobs')">Jobs</div>
@@ -304,5 +325,6 @@
 <script type="text/javascript" src="js/main.js?v=7"></script>
 <script type="text/javascript" src="js/info.js?v=1"></script>
 <script type="text/javascript" src="js/character.js?v=4"></script>
+<script type="text/javascript" src="js/living-world.js?v=7"></script>
 
 </html>

@@ -1,0 +1,196 @@
+.living-world {
+    min-width: 0;
+    margin-bottom: 15px;
+    overflow: hidden;
+    color: #f5ecd9;
+    border: 1px solid #a18458;
+    border-radius: 8px;
+    background: #252d30;
+    box-shadow: 0 18px 38px rgba(9, 12, 17, .32), inset 0 0 0 1px rgba(255, 237, 194, .15);
+}
+
+.living-world__heading,
+.living-world__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 17px;
+    background: linear-gradient(90deg, #283337, #3d3b33 54%, #273236);
+    font: 14px "Medieval Sharp", Georgia, serif;
+    letter-spacing: .055em;
+}
+
+.living-world__heading { border-bottom: 1px solid rgba(215, 181, 122, .42); }
+.living-world__eyebrow { color: #e0c18b; letter-spacing: .15em; }
+.living-world__age { color: #d5c7ac; }
+
+.living-world__view {
+    position: relative;
+    height: clamp(330px, 37vw, 430px);
+    isolation: isolate;
+    overflow: hidden;
+    background: #414840;
+}
+
+.living-world__backdrop {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity .65s ease;
+    background-image: var(--scene-image);
+    background-position: center 60%;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.living-world__backdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(20, 23, 22, .25), transparent 24%, transparent 76%, rgba(20, 23, 22, .25));
+}
+
+.living-world__backdrop.is-visible { opacity: 1; }
+
+.living-world__actors { position: absolute; z-index: 1; inset: 0; pointer-events: none; }
+.living-world__actor {
+    position: absolute;
+    left: 50%;
+    bottom: 13%;
+    height: 82%;
+    aspect-ratio: 1;
+    transform: translate3d(calc(-50% + var(--travel, 0px)), 0, 0) scale(var(--size, 1)) scaleX(var(--face, 1));
+    transform-origin: 50% 100%;
+    transition: transform 110ms linear;
+    will-change: transform;
+}
+.living-world__actor[hidden] { display: none; }
+.living-world__actor.is-rival { --face: -1; filter: brightness(.66) saturate(.72); }
+.living-world__actor::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: 42%;
+    height: 4%;
+    left: 30%;
+    bottom: 1%;
+    border-radius: 50%;
+    background: rgba(7, 15, 15, .3);
+    filter: blur(8px);
+}
+.living-world__clip {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity .2s ease;
+}
+.living-world__clip.is-visible { opacity: 1; }
+.living-world__clip video,
+.living-world__clip img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.living-world__clip [hidden] { display: none; }
+.living-world__prop {
+    position: absolute;
+    z-index: 2;
+    width: 35%;
+    left: 44%;
+    top: 56%;
+    transform-origin: 75% 10%;
+    animation: world-prop 2s ease-in-out infinite alternate;
+}
+.living-world__prop[hidden] { display: none; }
+.living-world__actor[data-prop="hoe"] .living-world__prop,
+.living-world__actor[data-prop="pickaxe"] .living-world__prop,
+.living-world__actor[data-prop="hammer"] .living-world__prop {
+    width: 32%; left: 46%; top: 6%; transform-origin: 90% 94%;
+}
+.living-world__actor[data-prop="fishing-rod"] .living-world__prop {
+    width: 30%; left: 50%; top: 9%; transform-origin: 65% 92%;
+}
+.living-world__actor[data-prop="book"] .living-world__prop {
+    width: 30%; left: 35%; top: 30%; animation-duration: 3s;
+}
+.living-world__actor[data-prop="bowl"] .living-world__prop {
+    width: 22%; left: 58%; top: 37%; animation-duration: 3s;
+}
+.living-world__actor[data-prop="orb"] .living-world__prop {
+    width: 20%; left: 69%; top: 55%; animation-duration: 2.5s;
+}
+@keyframes world-prop { from { transform: rotate(-5deg); } to { transform: rotate(8deg); } }
+.living-world.is-paused .living-world__prop { animation-play-state: paused; }
+.living-world__actor.is-walking .living-world__prop { display: none; }
+@media (prefers-reduced-motion: reduce) {
+    .living-world__actor, .living-world__clip, .living-world__prop { transition: none; animation: none; }
+}
+
+.living-world__ground {
+    position: absolute;
+    z-index: 2;
+    inset: auto 0 0;
+    height: 34%;
+    pointer-events: none;
+    background: linear-gradient(transparent, rgba(15, 20, 19, .25) 37%, rgba(10, 14, 16, .88));
+}
+
+.living-world__caption {
+    position: absolute;
+    z-index: 3;
+    left: 22px;
+    bottom: 16px;
+    display: grid;
+    gap: 2px;
+    max-width: calc(100% - 125px);
+    text-shadow: 0 2px 8px #121916, 0 1px 3px #111;
+}
+
+.living-world__chapter {
+    color: #e3bd80;
+    font: 12px "Medieval Sharp", Georgia, serif;
+    letter-spacing: .16em;
+}
+
+.living-world__caption strong { font: 25px/1.12 "Medieval Sharp", Georgia, serif; }
+.living-world__caption > span:last-child { color: #ecdfc4; font-size: 13px; letter-spacing: .045em; }
+
+.living-world__sequence {
+    position: absolute;
+    z-index: 3;
+    right: 21px;
+    bottom: 25px;
+    display: flex;
+    gap: 7px;
+}
+
+.living-world__sequence span {
+    display: block;
+    width: 27px;
+    height: 5px;
+    border-radius: 5px;
+    background: rgba(221, 219, 194, .45);
+    box-shadow: 0 1px 4px #172019;
+}
+
+.living-world__sequence span.is-current { background: #e9c187; }
+
+.living-world__footer {
+    justify-content: center;
+    min-height: 33px;
+    border-top: 1px solid rgba(215, 181, 122, .42);
+    font-size: 13px;
+    color: #e2d4b9;
+}
+
+.living-world__footer span:nth-child(2) { color: #b18b54; }
+
+@media (max-width: 1080px) {
+    .game-content .living-world { min-width: 760px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .living-world__backdrop { transition: none; }
+}
