@@ -49,7 +49,7 @@ const baseLifespan = 365 * 70
 
 const baseGameSpeed = 4
 
-const permanentUnlocks = ["Scheduling", "Shop", "Automation", "Quick task display", "Rebirth tab"]
+const permanentUnlocks = ["Scheduling", "Shop", "Automation", "Quick task display"]
 
 const jobBaseData = {
     "Beggar": {name: "Beggar", maxXp: 50, income: 5},
