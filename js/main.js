@@ -646,17 +646,19 @@ function updateAmuletArtwork() {
     }
     var stage = amuletStages[stageIndex]
     var artwork = document.getElementById("amuletArtwork")
-    if (artwork.dataset.stage == stage.key) return
+    var discovered = age >= 25
+    if (artwork.dataset.stage == stage.key && artwork.dataset.discovered == String(discovered)) return
 
     artwork.dataset.stage = stage.key
+    artwork.dataset.discovered = String(discovered)
     artwork.src = "art/amulet/" + stage.key + ".webp"
     artwork.alt = stage.alt
     document.getElementById("amuletStageTitle").textContent = stage.title
     document.getElementById("amuletStageDetail").textContent = stage.detail
     document.querySelectorAll(".amulet-milestones li").forEach(function(milestone, index) {
         milestone.classList.toggle("is-reached", age >= amuletStages[index].age)
-        milestone.classList.toggle("is-current", index == stageIndex && age >= 25)
-        if (index == stageIndex && age >= 25) milestone.setAttribute("aria-current", "step")
+        milestone.classList.toggle("is-current", index == stageIndex && discovered)
+        if (index == stageIndex && discovered) milestone.setAttribute("aria-current", "step")
         else milestone.removeAttribute("aria-current")
     })
 }
