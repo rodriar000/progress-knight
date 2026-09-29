@@ -896,7 +896,14 @@ function getElementsByClass(className) {
 function setLightDarkMode() {
     var body = document.getElementById("body")
     body.classList.contains("dark") ? body.classList.remove("dark") : body.classList.add("dark")
+    updateThemeLabel()
     saveGameData()
+}
+
+function updateThemeLabel() {
+    var darkMode = document.getElementById("body").classList.contains("dark")
+    document.getElementById("themeModeLabel").textContent = darkMode ? "Nightfall" : "Daylight"
+    document.getElementById("themeToggleButton").textContent = darkMode ? "Choose daylight" : "Choose nightfall"
 }
 
 function removeSpaces(string) {
@@ -1055,6 +1062,7 @@ function restorePreferences() {
         document.getElementById("row " + name).getElementsByClassName("checkbox")[0].checked = skippedSkills.includes(name)
     }
     document.getElementById("body").classList.toggle("dark", preferences.darkMode !== false)
+    updateThemeLabel()
     capturePreferences()
 }
 
@@ -1148,17 +1156,45 @@ function resetGameData() {
 
 function importGameData() {
     var importExportBox = document.getElementById("importExportBox")
-    var data = JSON.parse(window.atob(importExportBox.value))
-    gameData = data
-    restorePreferences()
-    saveGameData()
-    location.reload()
+    try {
+        var data = JSON.parse(window.atob(importExportBox.value.trim()))
+        if (!data || !data.taskData || !data.itemData || !data.requirements || !data.currentJob || !data.currentSkill) {
+            throw new Error("Invalid save")
+        }
+        gameData = data
+        restorePreferences()
+        saveGameData()
+        location.reload()
+    } catch (error) {
+        showArchiveFeedback("This code could not be read. Check that you pasted the complete save.", "error")
+    }
 }
 
 function exportGameData() {
     var importExportBox = document.getElementById("importExportBox")
     capturePreferences()
     importExportBox.value = window.btoa(JSON.stringify(gameData))
+    showArchiveFeedback("Save code ready. Copy it somewhere safe.")
+}
+
+function showArchiveFeedback(message, tone) {
+    var feedback = document.getElementById("archiveFeedback")
+    feedback.textContent = message
+    feedback.dataset.tone = tone || "info"
+}
+
+async function copyGameData() {
+    var box = document.getElementById("importExportBox")
+    if (!box.value.trim()) exportGameData()
+    try {
+        if (!navigator.clipboard) throw new Error("Clipboard unavailable")
+        await navigator.clipboard.writeText(box.value)
+        showArchiveFeedback("Save code copied to your clipboard.")
+    } catch (error) {
+        box.focus()
+        box.select()
+        showArchiveFeedback("The code is selected. Copy it with your keyboard.")
+    }
 }
 
 //Init
