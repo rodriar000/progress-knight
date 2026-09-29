@@ -107,16 +107,16 @@
 .living-world__actor[data-prop="hoe"] .living-world__prop,
 .living-world__actor[data-prop="pickaxe"] .living-world__prop,
 .living-world__actor[data-prop="hammer"] .living-world__prop {
-    width: 43%; left: 35%; top: 12%; transform-origin: 90% 94%;
+    width: 32%; left: 46%; top: 6%; transform-origin: 90% 94%;
 }
 .living-world__actor[data-prop="fishing-rod"] .living-world__prop {
-    width: 35%; left: 55%; top: 19%; transform-origin: 65% 92%;
+    width: 30%; left: 50%; top: 9%; transform-origin: 65% 92%;
 }
 .living-world__actor[data-prop="book"] .living-world__prop {
-    width: 42%; left: 29%; top: 30%; animation-duration: 3s;
+    width: 30%; left: 35%; top: 30%; animation-duration: 3s;
 }
 .living-world__actor[data-prop="bowl"] .living-world__prop {
-    width: 30%; left: 54%; top: 38%; animation-duration: 3s;
+    width: 22%; left: 58%; top: 37%; animation-duration: 3s;
 }
 .living-world__actor[data-prop="orb"] .living-world__prop {
     width: 20%; left: 69%; top: 55%; animation-duration: 2.5s;
