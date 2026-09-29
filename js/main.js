@@ -1142,7 +1142,9 @@ function renderJourneyGuide() {
             requirements.replaceChildren(...career.requirements.map(rule => {
                 var badge = document.createElement("span")
                 badge.className = "journey-guide__requirement" + (rule.complete ? " is-complete" : "")
-                badge.textContent = rule.name + " " + rule.level + "/" + rule.target
+                badge.textContent = rule.complete ?
+                    rule.name + " · level " + rule.level + " (needs " + rule.target + ")" :
+                    rule.name + " " + rule.level + "/" + rule.target
                 return badge
             }))
         }
@@ -1158,6 +1160,8 @@ function renderJourneyGuide() {
             }
         }
     }
+    document.getElementById("chapterGoalKicker").firstChild.textContent =
+        (chapter.ready ? "CHAPTER READY" : "NEXT CHAPTER") + " · AGE "
     document.getElementById("chapterGoalAge").textContent = chapter.age
     document.getElementById("chapterGoalTitle").textContent = chapter.title
     document.getElementById("chapterGoalDetail").textContent = chapter.detail
