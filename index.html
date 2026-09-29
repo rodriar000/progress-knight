@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="css/amulet.css?v=1">
     <link rel="stylesheet" type="text/css" href="css/shop.css?v=1">
     <link rel="stylesheet" type="text/css" href="css/living-world.css?v=6">
+    <link rel="stylesheet" type="text/css" href="css/settings.css?v=1">
     <title>Progress Knight</title>
 </head>
 <body id="body" class="dark">
@@ -289,30 +290,75 @@
                 </div>
 
                 <div class="tab" id="settings">
-                    <ul>
-                        <li>
-                            <h2>Import/export save</h2>
-                            <button class="w3-button button" onClick="importGameData()">Import</button>
-                            <button class="w3-button button" onClick="exportGameData()">Export</button>
-                            <form style="margin-top: 16px"> 
-                                <input id="importExportBox" type="text" style="width:300px; height:30px"></input>
-                            </form>
-                        </li>
-                        <li>
-                            <h2>Toggle light/dark mode</h2>
-                            <button class="w3-button button" onClick="setLightDarkMode()">Toggle</button>
-                        </li>
-                        <li>
-                            <h2>Join the discord community!</h2>
-                            <a href="https://discord.gg/fTRS4pHGka" target="_blank">
-                                <img src="https://cdn.icon-icons.com/icons2/2108/PNG/512/discord_icon_130958.png" width="100" height="100"></img>
-                            </a>
-                        </li>
-                        <li>
-                            <h2>Hard reset game</h2>
-                            <button class="w3-button button w3-red" onClick="resetGameData()">Reset</button>
-                        </li>
-                    </ul>
+                    <div class="settings-page">
+                        <header class="settings-heading">
+                            <div>
+                                <span class="settings-eyebrow">THE STEWARD'S LEDGER</span>
+                                <h2>Keep your journey</h2>
+                                <p>Shape how the realm appears, and carry your story wherever you go.</p>
+                            </div>
+                            <span class="settings-heading__mark" aria-hidden="true">✥</span>
+                        </header>
+
+                        <div class="settings-grid">
+                            <section class="settings-card settings-card--appearance" aria-labelledby="appearanceTitle">
+                                <span class="settings-card__index">I · APPEARANCE</span>
+                                <h3 id="appearanceTitle">A different light</h3>
+                                <p>Choose the atmosphere for your ledger and the world around it.</p>
+                                <div class="settings-theme-scene" aria-hidden="true">
+                                    <span class="settings-theme-scene__sky"></span>
+                                    <span class="settings-theme-scene__hills"></span>
+                                    <span class="settings-theme-scene__window"></span>
+                                </div>
+                                <div class="settings-card__footer">
+                                    <span class="settings-current"><span class="settings-current__dot"></span><span id="themeModeLabel">Nightfall</span></span>
+                                    <button id="themeToggleButton" type="button" class="settings-action" onClick="setLightDarkMode()">Choose daylight</button>
+                                </div>
+                            </section>
+
+                            <section class="settings-card settings-card--community" aria-labelledby="communityTitle">
+                                <span class="settings-card__index">II · COMMUNITY</span>
+                                <h3 id="communityTitle">The guild hall</h3>
+                                <p>Meet other travellers and share the paths you've taken.</p>
+                                <div class="settings-guild-seal" aria-hidden="true"><span>✦</span></div>
+                                <a class="settings-action settings-action--link" href="https://discord.gg/fTRS4pHGka" target="_blank" rel="noopener noreferrer">Visit the guild <span aria-hidden="true">↗</span></a>
+                            </section>
+
+                            <section class="settings-card settings-card--archive" aria-labelledby="archiveTitle">
+                                <div class="settings-archive-heading">
+                                    <div>
+                                        <span class="settings-card__index">III · SAVE ARCHIVE</span>
+                                        <h3 id="archiveTitle">Carry your story</h3>
+                                        <p>Export a save code for safekeeping, or paste one here to continue another journey. Importing replaces the current save.</p>
+                                    </div>
+                                    <span class="settings-archive-heading__sigil" aria-hidden="true">✧</span>
+                                </div>
+                                <label class="settings-field-label" for="importExportBox">Your save code</label>
+                                <textarea id="importExportBox" rows="4" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Your exported code will appear here. You can also paste a code to import."></textarea>
+                                <div class="settings-archive-actions">
+                                    <button type="button" class="settings-action settings-action--primary" onClick="exportGameData()">Export save</button>
+                                    <button type="button" class="settings-action" onClick="copyGameData()">Copy code</button>
+                                    <button type="button" class="settings-action settings-action--quiet" onClick="importGameData()">Import code</button>
+                                </div>
+                                <p class="settings-feedback" id="archiveFeedback" role="status" aria-live="polite"></p>
+                            </section>
+                        </div>
+
+                        <section class="settings-reset" aria-labelledby="resetTitle">
+                            <div>
+                                <span class="settings-card__index">IV · NEW BEGINNING</span>
+                                <h3 id="resetTitle">Start from nothing</h3>
+                                <p>Erase every life, possession and saved preference on this device.</p>
+                            </div>
+                            <details class="settings-reset__reveal">
+                                <summary>Reset options</summary>
+                                <div class="settings-reset__confirm">
+                                    <span>This cannot be undone. Export your save first if you want to keep it.</span>
+                                    <button type="button" class="settings-action settings-action--danger" onClick="resetGameData()">Erase this save</button>
+                                </div>
+                            </details>
+                        </section>
+                    </div>
                 </div>
             </div>
             </main>
@@ -322,7 +368,7 @@
 
 <script type="text/javascript" src="js/HackTimer.js"></script>
 <script type="text/javascript" src="js/classes.js"></script>
-<script type="text/javascript" src="js/main.js?v=9"></script>
+<script type="text/javascript" src="js/main.js?v=10"></script>
 <script type="text/javascript" src="js/info.js?v=1"></script>
 <script type="text/javascript" src="js/character.js?v=4"></script>
 <script type="text/javascript" src="js/living-world.js?v=7"></script>
