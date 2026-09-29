@@ -8,6 +8,12 @@ var gameData = {
     paused: false,
     timeWarpingEnabled: true,
     lastUpdateAt: 0,
+    preferences: {
+        autoPromote: false,
+        autoLearn: false,
+        skippedSkills: [],
+        darkMode: true,
+    },
 
     rebirthOneCount: 0,
     rebirthTwoCount: 0,
@@ -381,6 +387,7 @@ function setPause() {
 
 function setTimeWarping() {
     gameData.timeWarpingEnabled = !gameData.timeWarpingEnabled
+    saveGameData()
 }
 
 function setTask(taskName) {
@@ -889,6 +896,7 @@ function getElementsByClass(className) {
 function setLightDarkMode() {
     var body = document.getElementById("body")
     body.classList.contains("dark") ? body.classList.remove("dark") : body.classList.add("dark")
+    saveGameData()
 }
 
 function removeSpaces(string) {
@@ -1027,7 +1035,31 @@ function replaceSaveDict(dict, saveDict) {
     }
 }
 
+function capturePreferences() {
+    gameData.preferences = {
+        autoPromote: autoPromoteElement.checked,
+        autoLearn: autoLearnElement.checked,
+        skippedSkills: Object.keys(skillBaseData).filter(function(name) {
+            return document.getElementById("row " + name).getElementsByClassName("checkbox")[0].checked
+        }),
+        darkMode: document.getElementById("body").classList.contains("dark"),
+    }
+}
+
+function restorePreferences() {
+    var preferences = gameData.preferences || {}
+    autoPromoteElement.checked = preferences.autoPromote === true
+    autoLearnElement.checked = preferences.autoLearn === true
+    var skippedSkills = Array.isArray(preferences.skippedSkills) ? preferences.skippedSkills : []
+    for (var name of Object.keys(skillBaseData)) {
+        document.getElementById("row " + name).getElementsByClassName("checkbox")[0].checked = skippedSkills.includes(name)
+    }
+    document.getElementById("body").classList.toggle("dark", preferences.darkMode !== false)
+    capturePreferences()
+}
+
 function saveGameData() {
+    capturePreferences()
     localStorage.setItem("gameDataSave", JSON.stringify(gameData))
 }
 
@@ -1044,6 +1076,7 @@ function loadGameData() {
     }
 
     assignMethods()
+    restorePreferences()
     if (!Number.isFinite(gameData.lastUpdateAt) || gameData.lastUpdateAt <= 0) {
         gameData.lastUpdateAt = Date.now()
     }
@@ -1117,12 +1150,14 @@ function importGameData() {
     var importExportBox = document.getElementById("importExportBox")
     var data = JSON.parse(window.atob(importExportBox.value))
     gameData = data
+    restorePreferences()
     saveGameData()
     location.reload()
 }
 
 function exportGameData() {
     var importExportBox = document.getElementById("importExportBox")
+    capturePreferences()
     importExportBox.value = window.btoa(JSON.stringify(gameData))
 }
 
@@ -1243,6 +1278,11 @@ setTab(jobTabButton, "jobs")
 update()
 setInterval(update, 1000 / updateSpeed)
 setInterval(saveGameData, 3000)
+autoPromoteElement.addEventListener("change", saveGameData)
+autoLearnElement.addEventListener("change", saveGameData)
+document.getElementById("skillTable").addEventListener("change", function(event) {
+    if (event.target.classList.contains("checkbox")) saveGameData()
+})
 document.addEventListener("visibilitychange", function() {
     if (document.hidden) saveGameData()
     else update()
