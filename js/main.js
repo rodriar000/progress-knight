@@ -1,4 +1,5 @@
 var gameData = {
+    saveVersion: 1,
     taskData: {},
     itemData: {},
 
@@ -25,6 +26,9 @@ var gameData = {
 }
 
 var tempData = {}
+const saveStore = SaveSafety.createStore(localStorage, location.pathname)
+var saveWriteFailed = false
+var recoveryIndex = -1
 
 var skillWithLeastXpLeft = null
 
@@ -993,7 +997,7 @@ function assignMethods() {
 
     for (key in gameData.taskData) {
         var task = gameData.taskData[key]
-        if (task.baseData.income) {
+        if (Object.prototype.hasOwnProperty.call(jobBaseData, key)) {
             task.baseData = jobBaseData[task.name]
             task = Object.assign(new Job(jobBaseData[task.name]), task)
             
@@ -1083,23 +1087,41 @@ function restorePreferences() {
 
 function saveGameData() {
     capturePreferences()
-    localStorage.setItem("gameDataSave", JSON.stringify(gameData))
+    try {
+        saveStore.write(JSON.stringify(gameData))
+        saveWriteFailed = false
+        document.getElementById("saveWriteNotice").classList.add("hidden")
+    } catch (error) {
+        if (!saveWriteFailed) showArchiveFeedback("The browser could not save this game. Export a save code before leaving.", "error")
+        saveWriteFailed = true
+        document.getElementById("saveWriteNotice").classList.remove("hidden")
+    }
 }
 
 function loadGameData() {
-    var gameDataSave = JSON.parse(localStorage.getItem("gameDataSave"))
-
-    if (gameDataSave !== null) {
-        replaceSaveDict(gameData, gameDataSave)
-        replaceSaveDict(gameData.requirements, gameDataSave.requirements)
-        replaceSaveDict(gameData.taskData, gameDataSave.taskData)
-        replaceSaveDict(gameData.itemData, gameDataSave.itemData)
-
-        gameData = gameDataSave
+    var freshGameData = gameData
+    var raw = null
+    try {
+        raw = saveStore.read()
+        if (raw !== null) {
+            var saved = SaveSafety.validate(JSON.parse(raw), jobBaseData, skillBaseData, itemBaseData)
+            replaceSaveDict(gameData, saved)
+            replaceSaveDict(gameData.requirements, saved.requirements)
+            replaceSaveDict(gameData.taskData, saved.taskData)
+            replaceSaveDict(gameData.itemData, saved.itemData)
+            gameData = saved
+        }
+    } catch (error) {
+        gameData = freshGameData
+        if (raw !== null) {
+            try { saveStore.preserveDamaged(raw) } catch (storageError) {}
+            document.getElementById("saveRecoveryNotice").classList.remove("hidden")
+        }
     }
 
     assignMethods()
     restorePreferences()
+    if (saveStore.recoveries().length) document.getElementById("saveRecoveryCard").hidden = false
     if (!Number.isFinite(gameData.lastUpdateAt) || gameData.lastUpdateAt <= 0) {
         gameData.lastUpdateAt = Date.now()
     }
@@ -1179,7 +1201,7 @@ function update() {
 }
 
 function resetGameData() {
-    localStorage.clear()
+    saveStore.reset()
     location.reload()
 }
 
@@ -1187,12 +1209,8 @@ function importGameData() {
     var importExportBox = document.getElementById("importExportBox")
     try {
         var data = JSON.parse(window.atob(importExportBox.value.trim()))
-        if (!data || !data.taskData || !data.itemData || !data.requirements || !data.currentJob || !data.currentSkill) {
-            throw new Error("Invalid save")
-        }
-        gameData = data
-        restorePreferences()
-        saveGameData()
+        SaveSafety.validate(data, jobBaseData, skillBaseData, itemBaseData)
+        saveStore.write(JSON.stringify(data))
         location.reload()
     } catch (error) {
         showArchiveFeedback("This code could not be read. Check that you pasted the complete save.", "error")
@@ -1204,6 +1222,15 @@ function exportGameData() {
     capturePreferences()
     importExportBox.value = window.btoa(JSON.stringify(gameData))
     showArchiveFeedback("Save code ready. Copy it somewhere safe.")
+}
+
+function showRecoveredSave() {
+    var copies = saveStore.recoveries()
+    if (!copies.length) return
+    recoveryIndex = (recoveryIndex + 1) % copies.length
+    document.getElementById("importExportBox").value = copies[recoveryIndex]
+    showArchiveFeedback("Preserved copy " + (recoveryIndex + 1) + " of " + copies.length +
+        ". Copy its original data for safekeeping; it cannot be imported as a save code.")
 }
 
 function showArchiveFeedback(message, tone) {
