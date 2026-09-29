@@ -444,6 +444,7 @@ function createRow(templates, name, categoryName, categoryType) {
         row.getElementsByClassName("progressBar")[0].onclick = function() {setTask(name)}
     } else {
         row.getElementsByClassName("button")[0].onclick = categoryName == "Properties" ? function() {setProperty(name)} : function() {setMisc(name)}
+        row.getElementsByClassName("shop-item-art")[0].src = "art/shop/" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".webp"
     }
 
     return row
@@ -584,9 +585,11 @@ function updateItemRows() {
         var row = document.getElementById("row " + item.name)
         var button = row.getElementsByClassName("button")[0]
         button.disabled = gameData.coins < item.getExpense()
-        var active = row.getElementsByClassName("active")[0]
-        var color = itemCategories["Properties"].includes(item.name) ? headerRowColors["Properties"] : headerRowColors["Misc"]
-        active.style.backgroundColor = gameData.currentMisc.includes(item) || item == gameData.currentProperty ? color : "white"
+        var isProperty = itemCategories["Properties"].includes(item.name)
+        var isActive = gameData.currentMisc.includes(item) || item == gameData.currentProperty
+        row.classList.toggle("is-active", isActive)
+        button.setAttribute("aria-pressed", String(isActive))
+        row.getElementsByClassName("shop-item-state__text")[0].textContent = isActive ? (isProperty ? "Current" : "Active") : "Inactive"
         row.getElementsByClassName("effect")[0].textContent = item.getEffectDescription()
         formatCoins(item.getExpense(), row.getElementsByClassName("expense")[0])
     }
