@@ -1127,6 +1127,50 @@ function loadGameData() {
     }
 }
 
+function renderJourneyGuide() {
+    var career = JourneyGuide.career(gameData, jobCategories)
+    var chapter = JourneyGuide.chapter(gameData)
+    if (career) {
+        document.getElementById("careerPath").textContent = career.path.toUpperCase() + " · CAREER PATH"
+        document.getElementById("careerGoalTitle").textContent = career.title
+        document.getElementById("careerGoalDetail").textContent = career.detail
+        document.getElementById("careerAlternative").textContent = career.alternative
+        var requirements = document.getElementById("careerGoalRequirements")
+        var signature = career.requirements.map(rule => rule.name + ":" + rule.level + "/" + rule.target).join("|")
+        if (requirements.dataset.signature !== signature) {
+            requirements.dataset.signature = signature
+            requirements.replaceChildren(...career.requirements.map(rule => {
+                var badge = document.createElement("span")
+                badge.className = "journey-guide__requirement" + (rule.complete ? " is-complete" : "")
+                badge.textContent = rule.name + " " + rule.level + "/" + rule.target
+                return badge
+            }))
+        }
+        var button = document.getElementById("careerGoalAction")
+        var action = career.action
+        var actionKey = action.type + ":" + action.value
+        button.textContent = action.label
+        if (button.dataset.action !== actionKey) {
+            button.dataset.action = actionKey
+            button.onclick = function() {
+                if (action.type === "job") setTask(action.value)
+                else setTab(action.value === "skills" ? document.getElementById("skillTabButton") : jobTabButton, action.value)
+            }
+        }
+    }
+    document.getElementById("chapterGoalAge").textContent = chapter.age
+    document.getElementById("chapterGoalTitle").textContent = chapter.title
+    document.getElementById("chapterGoalDetail").textContent = chapter.detail
+    var track = document.getElementById("chapterGoalTrack")
+    if (track.getAttribute("aria-valuenow") !== String(chapter.progress)) {
+        track.setAttribute("aria-valuenow", chapter.progress)
+        document.getElementById("chapterGoalFill").style.width = chapter.progress + "%"
+        document.getElementById("chapterGoalProgress").textContent = chapter.ready ?
+            "The choice is yours." : chapter.progress + "% of this chapter"
+    }
+    document.getElementById("chapterGoalAction").hidden = !chapter.ready
+}
+
 function updateUI() {
     if (activeTab === "jobs") {
         updateTaskRows(jobBaseData)
@@ -1144,6 +1188,7 @@ function updateUI() {
     updateQuickTaskDisplay("skill")
     hideEntities()
     updateText()
+    renderJourneyGuide()
 }
 
 function renderUI(force) {
@@ -1372,6 +1417,9 @@ setInterval(update, 1000 / updateSpeed)
 setInterval(saveGameData, 3000)
 autoPromoteElement.addEventListener("change", saveGameData)
 autoLearnElement.addEventListener("change", function() { saveGameData(); renderUI(true) })
+document.getElementById("chapterGoalAction").addEventListener("click", function() {
+    setTab(document.getElementById("rebirthTabButton"), "rebirth")
+})
 document.getElementById("skillTable").addEventListener("change", function(event) {
     if (event.target.classList.contains("checkbox")) saveGameData()
 })

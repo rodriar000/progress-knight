@@ -1,0 +1,83 @@
+.journey-guide {
+    --guide-ink: #392b1b;
+    --guide-muted: #6b5b47;
+    --guide-edge: rgba(112, 80, 45, .48);
+    --guide-gold: #93672f;
+    margin-bottom: 15px;
+    padding: 0 !important;
+    overflow: hidden;
+    color: var(--guide-ink);
+    border: 1px solid var(--guide-edge);
+    border-radius: 7px;
+    background: linear-gradient(145deg, rgba(249, 239, 218, .97), rgba(226, 210, 177, .96));
+    box-shadow: 0 14px 30px rgba(24, 17, 9, .2), inset 0 1px rgba(255, 255, 255, .57);
+}
+
+.dark .journey-guide {
+    --guide-ink: #f0e3cb;
+    --guide-muted: #c7b59a;
+    --guide-edge: rgba(187, 151, 99, .55);
+    --guide-gold: #e0b576;
+    background: linear-gradient(145deg, rgba(47, 44, 38, .97), rgba(25, 33, 35, .97));
+}
+
+.journey-guide__heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 8px 16px;
+    color: var(--guide-gold);
+    border-bottom: 1px solid var(--guide-edge);
+    font: 12px "Medieval Sharp", Georgia, serif;
+    letter-spacing: .14em;
+}
+
+.journey-guide__heading small {
+    color: var(--guide-muted);
+    font: 13px "Fell English", Georgia, serif;
+    letter-spacing: 0;
+}
+
+.journey-guide__grid { display: grid; grid-template-columns: 1fr 1fr; }
+.journey-guide__card { min-width: 0; padding: 13px 16px 15px; }
+.journey-guide__card + .journey-guide__card { border-left: 1px solid var(--guide-edge); }
+.journey-guide__kicker { color: var(--guide-gold); font: 11px "Medieval Sharp", Georgia, serif; letter-spacing: .08em; }
+.journey-guide h2 { margin: 3px 0 2px; color: var(--guide-ink); font: 23px/1.1 "Medieval Sharp", Georgia, serif; }
+.journey-guide p { margin: 0; color: var(--guide-muted); font-size: 14px; line-height: 1.25; }
+.journey-guide__requirements { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.journey-guide__requirement {
+    padding: 3px 7px;
+    border: 1px solid var(--guide-edge);
+    border-radius: 3px;
+    color: var(--guide-ink);
+    background: rgba(128, 98, 59, .1);
+    font-size: 12px;
+}
+.journey-guide__requirement.is-complete { color: var(--guide-gold); }
+.journey-guide .journey-guide__alternative { margin-top: 6px; font-size: 12px; font-style: italic; }
+.journey-guide__action {
+    margin-top: 8px;
+    padding: 4px 9px;
+    border: 1px solid var(--guide-edge);
+    border-radius: 3px;
+    color: var(--guide-ink);
+    background: rgba(171, 133, 77, .2);
+    font: 13px "Medieval Sharp", Georgia, serif;
+    cursor: pointer;
+}
+.journey-guide__action:hover { background: rgba(171, 133, 77, .35); }
+.journey-guide__action:focus-visible { outline: 2px solid var(--guide-gold); outline-offset: 2px; }
+.journey-guide__action[hidden] { display: none; }
+.journey-guide__track { height: 6px; margin-top: 10px; overflow: hidden; border-radius: 6px; background: rgba(28, 35, 37, .48); }
+.journey-guide__track span { display: block; width: 0; height: 100%; background: linear-gradient(90deg, #718889, #d4a45c); transition: width .2s linear; }
+.journey-guide__progress { display: block; margin-top: 3px; color: var(--guide-muted); font-size: 12px; }
+
+@media (max-width: 680px) {
+    .journey-guide__grid { grid-template-columns: 1fr; }
+    .journey-guide__card + .journey-guide__card { border-left: 0; border-top: 1px solid var(--guide-edge); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .journey-guide__track span { transition: none; }
+}
