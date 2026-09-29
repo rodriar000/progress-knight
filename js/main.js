@@ -7,6 +7,7 @@ var gameData = {
     evil: 0,
     paused: false,
     timeWarpingEnabled: true,
+    lastUpdateAt: 0,
 
     rebirthOneCount: 0,
     rebirthTwoCount: 0,
@@ -25,6 +26,10 @@ const autoPromoteElement = document.getElementById("autoPromote")
 const autoLearnElement = document.getElementById("autoLearn")
 
 const updateSpeed = 20
+const tickDuration = 1000 / updateSpeed
+const maxCatchUpTicks = 2000
+var catchUpScheduled = false
+var ticksSinceSkillRefresh = updateSpeed
 
 const baseLifespan = 365 * 70
 
@@ -368,7 +373,10 @@ function setTab(element, selectedTab) {
 }
 
 function setPause() {
+    if (!gameData.paused) update()
     gameData.paused = !gameData.paused
+    gameData.lastUpdateAt = Date.now()
+    saveGameData()
 }
 
 function setTimeWarping() {
@@ -911,6 +919,7 @@ function rebirthReset() {
 
     gameData.coins = 0
     gameData.days = 365 * 14
+    gameData.lastUpdateAt = Date.now()
     gameData.currentJob = gameData.taskData["Beggar"]
     gameData.currentSkill = gameData.taskData["Concentration"]
     gameData.currentProperty = gameData.itemData["Homeless"]
@@ -1035,6 +1044,9 @@ function loadGameData() {
     }
 
     assignMethods()
+    if (!Number.isFinite(gameData.lastUpdateAt) || gameData.lastUpdateAt <= 0) {
+        gameData.lastUpdateAt = Date.now()
+    }
 }
 
 function updateUI() {
@@ -1051,14 +1063,49 @@ function updateUI() {
     updateText()  
 }
 
-function update() {
+function advanceGameTick() {
     increaseDays()
     autoPromote()
     autoLearn()
     doCurrentTask(gameData.currentJob)
     doCurrentTask(gameData.currentSkill)
     applyExpenses()
-    updateUI()
+}
+
+function update() {
+    const now = Date.now()
+    if (gameData.paused || !isAlive()) {
+        gameData.lastUpdateAt = now
+        updateUI()
+        return
+    }
+
+    if (gameData.lastUpdateAt > now) gameData.lastUpdateAt = now
+    const pendingTicks = Math.floor((now - gameData.lastUpdateAt) / tickDuration)
+    const ticks = Math.min(pendingTicks, maxCatchUpTicks)
+
+    for (let tick = 0; tick < ticks; tick++) {
+        if (!isAlive()) {
+            gameData.lastUpdateAt = now
+            break
+        }
+        if (ticksSinceSkillRefresh >= updateSpeed) {
+            setSkillWithLowestMaxXp()
+            ticksSinceSkillRefresh = 0
+        }
+        advanceGameTick()
+        ticksSinceSkillRefresh++
+        gameData.lastUpdateAt += tickDuration
+    }
+
+    if (ticks > 0) updateUI()
+    if (pendingTicks > maxCatchUpTicks && !catchUpScheduled) {
+        catchUpScheduled = true
+        setTimeout(function() {
+            catchUpScheduled = false
+            update()
+        }, 0)
+    }
 }
 
 function resetGameData() {
@@ -1196,4 +1243,8 @@ setTab(jobTabButton, "jobs")
 update()
 setInterval(update, 1000 / updateSpeed)
 setInterval(saveGameData, 3000)
-setInterval(setSkillWithLowestMaxXp, 1000)
+document.addEventListener("visibilitychange", function() {
+    if (document.hidden) saveGameData()
+    else update()
+})
+window.addEventListener("pagehide", saveGameData)
