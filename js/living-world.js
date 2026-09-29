@@ -14,7 +14,9 @@
     const markers = [document.getElementById("worldWorkMarker"), document.getElementById("worldSkillMarker")];
     const backgrounds = Array.from(view.querySelectorAll(".living-world__backdrop"));
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-    const useVideo = !!document.createElement("video").canPlayType('video/webm; codecs="vp9"');
+    // Safari handles animated WebP alpha more reliably than transparent VP9.
+    const useVideo = !!document.createElement("video").canPlayType('video/webm; codecs="vp9"') &&
+        !navigator.vendor.includes("Apple");
 
     const actions = {
         Beggar: ["beg", "street", "Old quarter", "Searching for a living"],
@@ -75,7 +77,9 @@
             element.append(layer);
             video.addEventListener("error", () => {
                 video.hidden = true;
+                image.hidden = false;
                 image.src = video.dataset.fallback;
+                syncPlayback();
             });
             return { layer, video, image };
         });
@@ -102,6 +106,8 @@
         const poster = `art/actors/${name}-poster.webp`;
         incoming.video.pause();
         incoming.video.hidden = still || !useVideo;
+        incoming.image.dataset.poster = poster;
+        incoming.image.dataset.animated = `art/actors/${name}-animated.webp`;
         incoming.image.src = still ? poster : (useVideo ? poster : `art/actors/${name}-animated.webp`);
         incoming.image.hidden = !still && useVideo;
         if (!still && useVideo) {
@@ -131,10 +137,15 @@
             !gameData.paused && (typeof isAlive !== "function" || isAlive()) && !reducedMotion.matches;
         stage.classList.toggle("is-paused", !playing);
         for (const actor of [hero, rival]) {
-            const active = actor.slots[actor.active].video;
+            const slot = actor.slots[actor.active];
+            const active = slot.video;
             if (playing && !actor.element.hidden && !active.hidden && active.paused) {
                 active.play().catch(() => {});
             } else if (!playing && !active.paused) active.pause();
+            if (!slot.image.hidden && !reducedMotion.matches) {
+                const desired = playing && !actor.element.hidden ? slot.image.dataset.animated : slot.image.dataset.poster;
+                if (desired && slot.image.getAttribute("src") !== desired) slot.image.src = desired;
+            }
         }
     }
 
