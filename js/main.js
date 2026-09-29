@@ -26,7 +26,7 @@ var gameData = {
 
 var tempData = {}
 
-var skillWithLowestMaxXp = null
+var skillWithLeastXpLeft = null
 
 const autoPromoteElement = document.getElementById("autoPromote")
 const autoLearnElement = document.getElementById("autoLearn")
@@ -807,46 +807,27 @@ function checkSkillSkipped(skill) {
     return isSkillSkipped
 }
 
-function setSkillWithLowestMaxXp() {
-    var xpDict = {}
+function setSkillWithLeastXpLeft() {
+    var leastXpLeft = Infinity
+    skillWithLeastXpLeft = null
 
     for (skillName in gameData.taskData) {
         var skill = gameData.taskData[skillName]
         var requirement = gameData.requirements[skillName]
-        if (skill instanceof Skill && requirement.isCompleted() && !checkSkillSkipped(skill)) {
-            xpDict[skill.name] = skill.level //skill.getMaxXp() / skill.getXpGain()
-        }
-    }
+        if (!(skill instanceof Skill) || !requirement.isCompleted() || checkSkillSkipped(skill)) continue
 
-    if (xpDict == {}) {
-        skillWithLowestMaxXp = gameData.taskData["Concentration"]
-        return
-    }
-
-    var skillName = getKeyOfLowestValueFromDict(xpDict)
-    skillWithLowestMaxXp = gameData.taskData[skillName]
-}
-
-function getKeyOfLowestValueFromDict(dict) {
-    var values = []
-    for (key in dict) {
-        var value = dict[key]
-        values.push(value)
-    }
-
-    values.sort(function(a, b){return a - b})
-
-    for (key in dict) {
-        var value = dict[key]
-        if (value == values[0]) {
-            return key
+        var xpLeft = skill.getXpLeft()
+        if (xpLeft < leastXpLeft ||
+            (xpLeft === leastXpLeft && skill === gameData.currentSkill)) {
+            leastXpLeft = xpLeft
+            skillWithLeastXpLeft = skill
         }
     }
 }
 
 function autoLearn() {
-    if (!autoLearnElement.checked || !skillWithLowestMaxXp) return
-    gameData.currentSkill = skillWithLowestMaxXp
+    if (!autoLearnElement.checked || !skillWithLeastXpLeft) return
+    gameData.currentSkill = skillWithLeastXpLeft
 }
 
 function yearsToDays(years) {
@@ -1178,7 +1159,7 @@ function update() {
             break
         }
         if (ticksSinceSkillRefresh >= updateSpeed) {
-            setSkillWithLowestMaxXp()
+            setSkillWithLeastXpLeft()
             ticksSinceSkillRefresh = 0
         }
         advanceGameTick()
